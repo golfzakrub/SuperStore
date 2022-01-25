@@ -9,5 +9,6 @@ class Hello:
         print("Hellooooo")
     
     def loop(self):
-        for i in range(6):
+        a = [1,2,3,4]
+        for i in range(a):
             print(i)
