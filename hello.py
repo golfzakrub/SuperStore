@@ -7,3 +7,7 @@ class Hello:
 
     def greeting3(self):
         print("Hellooooo")
+    
+    def loop(self):
+        for i in range(6):
+            print(i)
