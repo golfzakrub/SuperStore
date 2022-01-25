@@ -10,5 +10,5 @@ class Hello:
     
     def loop(self):
         a = [1,2,3,4]
-        for i in range(a):
+        for i in a:
             print(i)
