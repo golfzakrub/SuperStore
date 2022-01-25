@@ -4,3 +4,6 @@ class Hello:
 
     def greeting(self):
         print("Hello")
+
+    def greeting3(self):
+        print("Hellooooo")
