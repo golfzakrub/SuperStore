@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(self.getFile)
         
         self.pushButton_2.clicked.connect(self.graph)
+        self.listWidget_3.itemDoubleClicked.connect(self.readRow)
     # def __init__(self):
         # self.pushButton.clicked.connect(self.getFile)
     
@@ -151,6 +152,9 @@ class Ui_MainWindow(object):
         self.filename = QFileDialog.getOpenFileName(filter = "csv (*.csv)")[0]
         print("File :",self.filename)
         self.readData()
+
+    # def readRow(self):
+    #     print(selflistWidget_3)
 
 
     
