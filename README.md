@@ -1,6 +1,6 @@
 # SuperStore
 Softdev2
 
-supergui1 (1) is the main gui 
+supergui1plus is the main gui 
 
  
