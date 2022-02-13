@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetIt
 import  pandas as pd
 from io import StringIO
 import altair as alt
+from PyQt5.QtCore import QDataStream, Qt
 
-# fdfdfd
 
 class WebEngineView(QtWebEngineWidgets.QWebEngineView):
     def __init__(self, parent=None):
@@ -43,7 +43,28 @@ class WebEngineView(QtWebEngineWidgets.QWebEngineView):
         chart.save(output, "html", **kwargs)
         self.setHtml(output.getvalue())
 
+class HeadList(QtWidgets.QListWidget):
+    def __init__(self, main, parent):
+        super().__init__(parent)
+        self.main = main
+        
+    def readData(self, mime: QtCore.QMimeData) -> list:
+        self.stream = QDataStream(mime.data('application/x-qabstractitemmodeldatalist'))
+        textList = []
+        while not self.stream.atEnd():
+            # we're not using row and columns, but we *must* read them
+            row = self.stream.readInt()
+            col = self.stream.readInt()
+            for dataSize in range(self.stream.readInt()):
+                role, value = self.stream.readInt(), self.stream.readQVariant()
+                if role == Qt.DisplayRole:
+                    textList.append(value)
+        return textList[0]
 
+    def dropEvent(self, event: QtGui.QDropEvent) -> None:
+        super().dropEvent(event)
+        self.main.update_head()
+        
 class Ui_Filter_Window(object):
     def __init__(self):
         
@@ -249,31 +270,57 @@ class Ui_Value(object):
     def applyValue(self,item,Value):
         if self.checkBox.isChecked():
             print ("Sum")
-            op[str(item)] = "sum"
-            Value.destroy()
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "sum"
+                item.setText("sum("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "sum"
+                item.setText("sum("+item.text()+")")
         elif self.checkBox_2.isChecked():
-            print ("Max")
-            op[str(item)] = "max"
-            Value.destroy()
+            print ("Max")         
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "max"
+                item.setText("max("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "max"
+                item.setText("max("+item.text()+")")
         elif self.checkBox_3.isChecked():
             print ("Min")
-            op[str(item)] = "min"
-            Value.destroy()
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "min"
+                item.setText("min("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "min"
+                item.setText("min("+item.text()+")")
         elif self.checkBox_4.isChecked():
             print ("Mean")
-            op[str(item)] = "mean"
-            Value.destroy()
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "mean"
+                item.setText("mean("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "mean"
+                item.setText("mean("+item.text()+")")
         elif self.checkBox_5.isChecked():
             print ("Median")
-            op[str(item)] = "median"
-            Value.destroy()
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "median"
+                item.setText("median("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "median"
+                item.setText("median("+item.text()+")")
         elif self.checkBox_6.isChecked():
             print ("Count")
-            op[str(item)] = "count"
-            Value.destroy()
+            if "(" in item.text():
+                op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "count"
+                item.setText("count("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+            else:
+                op[str(item.text())] = "count"
+                item.setText("count("+item.text()+")")
 
         else:
             print("please select filterValue")
+        
+        Value.close()
     ###############################################################
 
 class Ui_MainWindow(object):
@@ -336,7 +383,7 @@ class Ui_MainWindow(object):
         self.Plot_Pie_Button.setGeometry(QtCore.QRect(570, 80, 75, 23))
         self.Plot_Pie_Button.setObjectName("Plot_Pie_Button")
         self.tabWidget.addTab(self.tab_3, "")
-        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget = HeadList(self,self.centralwidget)
         self.listWidget.setGeometry(QtCore.QRect(50, 90, 261, 241))
         self.listWidget.setObjectName("listWidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -348,7 +395,7 @@ class Ui_MainWindow(object):
         self.Union_Button_2 = QtWidgets.QPushButton(self.centralwidget)
         self.Union_Button_2.setGeometry(QtCore.QRect(130, 10, 75, 23))
         self.Union_Button_2.setObjectName("Union_Button_2")
-        self.listWidget_4 = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget_4 = HeadList(self, self.centralwidget)
         self.listWidget_4.setGeometry(QtCore.QRect(50, 380, 261, 211))
         self.listWidget_4.setObjectName("listWidget_4")
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
@@ -472,6 +519,8 @@ class Ui_MainWindow(object):
             return print("ERROR")   
         print(Dimension,Measurement,Dimension_backup,Measurement_backup)
         for Dimension_head in range(len(self.listWidget)):
+            if "(" in self.listWidget.item(Dimension_head).text():
+                self.listWidget.item(Dimension_head).setText(self.listWidget.item(Dimension_head).text()[self.listWidget.item(Dimension_head).text().index("(")+1:self.listWidget.item(Dimension_head).text().index(")")])            
             if self.listWidget.item(Dimension_head).text() not in Dimension:
                 if self.listWidget.item(Dimension_head).text() in Measurement_backup :
                     Dimension.append(self.listWidget.item(Dimension_head).text())
@@ -492,6 +541,8 @@ class Ui_MainWindow(object):
                     Measurement.remove(self.listWidget.item(Dimension_head).text())         
         
         for Measurement_head in range(len(self.listWidget_4)):
+            if "(" in self.listWidget_4.item(Measurement_head).text():
+                self.listWidget_4.item(Measurement_head).setText(self.listWidget_4.item(Measurement_head).text()[self.listWidget_4.item(Measurement_head).text().index("(")+1:self.listWidget_4.item(Measurement_head).text().index(")")])            
             if self.listWidget_4.item(Measurement_head).text() not in Measurement:
                 if  self.listWidget_4.item(Measurement_head).text() in Dimension_number:
                     Dimension.remove(self.listWidget_4.item(Measurement_head).text())
@@ -576,10 +627,6 @@ class Ui_MainWindow(object):
     def getDataFilter(self,data,item): ##recive DataFilter from filterComplete
         
         filter_key[item] = data
-        print(filter_key[item])
-
-        
-        # print(filter_data , "zzzzz")
 
 
     def data_plot(self,fig):        
@@ -595,10 +642,16 @@ class Ui_MainWindow(object):
 
         
 
-        for r in range(len(self.listWidget_3)):
-            row_index.append(self.listWidget_3.item(r).text())
+        for r in range(len(self.listWidget_3)):            
+            if "(" in self.listWidget_3.item(r).text() :
+                row_index.append(self.listWidget_3.item(r).text()[self.listWidget_3.item(r).text().index("(")+1:self.listWidget_3.item(r).text().index(")")])
+            else:
+                row_index.append(self.listWidget_3.item(r).text())
         for c in range(len(self.listWidget_2)):
-            col_index.append(self.listWidget_2.item(c).text())
+            if "(" in self.listWidget_2.item(c).text() :
+                col_index.append(self.listWidget_2.item(c).text()[self.listWidget_2.item(c).text().index("(")+1:self.listWidget_2.item(c).text().index(")")])
+            else:    
+                col_index.append(self.listWidget_2.item(c).text())
         for data_row in range(len(row_index)):
             data.append(row_index[data_row])
         for data_col in range(len(col_index)):
@@ -764,52 +817,59 @@ class Ui_MainWindow(object):
         
         item2 = self.listWidget_2.currentItem()    
         itemget = self.listWidget_2 
-        if str(item2.text()) in Measurement :
-            self.Value = QtWidgets.QMainWindow()
-            self.ui = Ui_Value()
-            self.ui.setupUi(item2.text(),self.Value)
-            self.Value.show()
+        if "(" in self.listWidget_2.currentItem().text():
+            if str(item2.text()[item2.text()[item2.text().index("(")+1:item2.text().index(")")]]) in Measurement :
+                self.Value = QtWidgets.QMainWindow()
+                self.ui = Ui_Value()
+                self.ui.setupUi(item2,self.Value)
+                self.Value.show()
 
+            else:
+                self.Filter_Window = QtWidgets.QMainWindow()
+                self.ui2 = Ui_Filter_Window()
+                self.ui2.setupUi(item2,self.Filter_Window,itemget,self.all_data)
+                self.Filter_Window.show()
         else:
-            self.Filter_Window = QtWidgets.QMainWindow()
-            self.ui2 = Ui_Filter_Window()
-            self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-            self.Filter_Window.show()
+            if str(item2.text()) in Measurement :
+                self.Value = QtWidgets.QMainWindow()
+                self.ui = Ui_Value()
+                self.ui.setupUi(item2.text(),self.Value)
+                self.Value.show()
+
+            else:
+                self.Filter_Window = QtWidgets.QMainWindow()
+                self.ui2 = Ui_Filter_Window()
+                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                self.Filter_Window.show()            
            
-
-
-        
-    # def filterdataup(self):
-    #     item2 = self.listWidget_2.currentItem()
-    #     for i in self.all_data[item2]:
-    #         self.item = QtWidgets.QListWidgetItem(i)
-    #         self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
-    #         self.item.setCheckState(QtCore.Qt.Checked)
-    #         self.listWidget.addItem(self.item)
-
 
     def filterdown(self):
         item3 = self.listWidget_3.currentItem()
         itemget = self.listWidget_3
-        if str(item3.text()) in Measurement :
-            self.Value = QtWidgets.QMainWindow()
-            self.ui = Ui_Value()
-            self.ui.setupUi(item3.text(),self.Value)
-            self.Value.show()
-        else :
-            self.Filter_Window = QtWidgets.QMainWindow()
-            self.ui2 = Ui_Filter_Window()
-            self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-            self.Filter_Window.show()
+        if "(" in self.listWidget_3.currentItem().text() :  
+            if str(item3.text()[item3.text().index("(")+1:item3.text().index(")")]) in Measurement :
+                self.Value = QtWidgets.QMainWindow()
+                self.ui = Ui_Value()
+                self.ui.setupUi(item3,self.Value)
+                self.Value.show()
+            else :
+                self.Filter_Window = QtWidgets.QMainWindow()
+                self.ui2 = Ui_Filter_Window()
+                self.ui2.setupUi(item3,self.Filter_Window,itemget,self.all_data)
+                self.Filter_Window.show()               
+        else:
+            if str(item3.text()) in Measurement :
+                self.Value = QtWidgets.QMainWindow()
+                self.ui = Ui_Value()
+                self.ui.setupUi(item3,self.Value)
+                self.Value.show()
+            else :
+                self.Filter_Window = QtWidgets.QMainWindow()
+                self.ui2 = Ui_Filter_Window()
+                self.ui2.setupUi(item3,self.Filter_Window,itemget,self.all_data)
+                self.Filter_Window.show()
 
 
-    # def filterdatadown(self):
-    #     item3 = self.listWidget_3.currentItem()
-    #     for i in self.all_data[item3]:
-    #         self.item = QtWidgets.QListWidgetItem(i)
-    #         self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
-    #         self.item.setCheckState(QtCore.Qt.Checked)
-    #         self.listWidget.addItem(self.item)
 
 
 
