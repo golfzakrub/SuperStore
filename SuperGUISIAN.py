@@ -1,11 +1,13 @@
 #pyuic5 -x gui.ui -o guitest2.py
 
+from tracemalloc import start
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
 from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetItem,QFileDialog,QWidget
 import  pandas as pd
 from io import StringIO
 import altair as alt
+
 
 
 class WebEngineView(QtWebEngineWidgets.QWebEngineView):
@@ -40,6 +42,86 @@ class WebEngineView(QtWebEngineWidgets.QWebEngineView):
         output = StringIO()
         chart.save(output, "html", **kwargs)
         self.setHtml(output.getvalue())
+
+
+class Ui_Filter_Window(object):
+    def __init__(self):
+        
+        self.getdatafilter = Ui_MainWindow()
+        
+        
+        
+    def setupUi(self,item_head, Filter_Window,listWidget,all_data):
+        Filter_Window.setObjectName("Filter_Window")
+        Filter_Window.resize(412, 575)
+        self.centralwidget = QtWidgets.QWidget(Filter_Window)
+        self.centralwidget.setObjectName("centralwidget")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 391, 481))
+        self.listWidget.setObjectName("listWidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
+        self.label.setObjectName("label")
+        self.Apply = QtWidgets.QPushButton(self.centralwidget)
+        self.Apply.setGeometry(QtCore.QRect(250, 20, 75, 23))
+        self.Apply.setObjectName("Apply")
+        Filter_Window.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(Filter_Window)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 412, 21))
+        self.menubar.setObjectName("menubar")
+        Filter_Window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(Filter_Window)
+        self.statusbar.setObjectName("statusbar")
+        Filter_Window.setStatusBar(self.statusbar)
+
+        self.filterdata(listWidget,all_data)
+        
+        
+
+        
+        self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.retranslateUi(Filter_Window)
+        QtCore.QMetaObject.connectSlotsByName(Filter_Window)
+
+    def retranslateUi(self, Filter_Window):
+        _translate = QtCore.QCoreApplication.translate
+        Filter_Window.setWindowTitle(_translate("Filter_Window", "MainWindow"))
+        self.label.setText(_translate("Filter_Window", "LIST HEADER"))
+        self.Apply.setText(_translate("Filter_Window", "Apply"))
+
+    def filterdata(self,listWidget,all_data):
+        all_data = all_data
+        
+        item2 = listWidget.currentItem().text()
+        for i in all_data[item2].unique():
+            self.item = QtWidgets.QListWidgetItem(i)
+            self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            self.item.setCheckState(QtCore.Qt.Checked)
+            self.listWidget.addItem(self.item)
+        print("----------------------Filter-------------------------")       
+
+
+
+    def filterComplete(self,item_head):
+        self.getCheckItem = []
+        self.getCheckItem.clear()
+        self.item = item_head
+        for i in range(self.listWidget.count()):
+            if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
+                self.getCheckItem.append(self.listWidget.item(i).text())
+        print(self.getCheckItem)
+        print(self.item)
+        Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)
+        
+        
+       
+        
+######################
+        
+                
+
+        
+
 
 
 class Ui_Value(object):
@@ -154,7 +236,7 @@ class Ui_Value(object):
 
     def retranslateUi(self, Value):
         _translate = QtCore.QCoreApplication.translate
-        Value.setWindowTitle(_translate("Value", "MainWindow"))
+        Value.setWindowTitle(_translate("Value", " Measurement Value"))
         self.checkBox.setText(_translate("Value", "Sum"))
         self.checkBox_2.setText(_translate("Value", "Max"))
         self.checkBox_3.setText(_translate("Value", "Min"))
@@ -195,6 +277,8 @@ class Ui_Value(object):
     ###############################################################
 
 class Ui_MainWindow(object):
+    
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1107, 704)
@@ -320,10 +404,15 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+
+
         self.view =WebEngineView()
         self.verticalLayout.addWidget(self.view)
 
         self.filter = Ui_Value()
+        self.filterDimension = Ui_Filter_Window()
+
+        self.tableWidget.setSortingEnabled(True)    
 
         
     def retranslateUi(self, MainWindow):
@@ -344,11 +433,17 @@ class Ui_MainWindow(object):
         self.Default_Button.setText(_translate("MainWindow", "Default"))
         self.Union_Button_2.setText(_translate("MainWindow", "Union"))
         
+
     def showdata_head(self):
+        if start_ui == "0":
+            return print("ERROR")
         self.listWidget.clear()
         self.listWidget_4.clear()
-        global op
+        global op ,filter_data,head_filter , filter_key
+        filter_data = []
+        head_filter = []
         op = {}
+        filter_key = {}
         global Dimension,Measurement,Dimension_backup,Measurement_backup,Dimension_number
         Dimension = []
         Measurement = []
@@ -373,6 +468,8 @@ class Ui_MainWindow(object):
                 self.listWidget.addItem(x)
         
     def update_head(self):
+        if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
+            return print("ERROR")   
         print(Dimension,Measurement,Dimension_backup,Measurement_backup)
         for Dimension_head in range(len(self.listWidget)):
             if self.listWidget.item(Dimension_head).text() not in Dimension:
@@ -388,7 +485,11 @@ class Ui_MainWindow(object):
                     print(Dimension_head)
                     print(self.listWidget.item(Dimension_head).text())
                     Measurement.remove(self.listWidget.item(Dimension_head).text())
-                    self.all_data[self.listWidget.item(Dimension_head).text()] = self.all_data[self.listWidget.item(Dimension_head).text()].astype(str)            
+                    self.all_data[self.listWidget.item(Dimension_head).text()] = self.all_data[self.listWidget.item(Dimension_head).text()].astype(str) 
+                
+                elif  self.listWidget.item(Dimension_head).text() in Dimension_backup : 
+                    Dimension.append(self.listWidget.item(Dimension_head).text())
+                    Measurement.remove(self.listWidget.item(Dimension_head).text())         
         
         for Measurement_head in range(len(self.listWidget_4)):
             if self.listWidget_4.item(Measurement_head).text() not in Measurement:
@@ -407,9 +508,12 @@ class Ui_MainWindow(object):
                         self.all_data[self.listWidget_4.item(Measurement_head).text()] = self.all_data[self.listWidget_4.item(Measurement_head).text()].astype(float)
                     else:
                         self.all_data[self.listWidget_4.item(Measurement_head).text()] = self.all_data[self.listWidget_4.item(Measurement_head).text()].astype(int)                    
+                
+                elif  self.listWidget_4.item(Measurement_head).text() in Dimension_backup:
+                    Dimension.remove(self.listWidget_4.item(Measurement_head).text())
+                    Measurement.append(self.listWidget_4.item(Measurement_head).text())
     
-    
-    def showdata_table(self):
+    def showdata_table(self):  
         self.tableWidget.clear()
         numcolumn = len(self.all_data)
         if numcolumn == 0:
@@ -429,6 +533,8 @@ class Ui_MainWindow(object):
         self.showdata_table()
         
     def readUnionData(self):
+        if self.filename == "":
+            return print("ERROR IMPORT FILE")
         self.data_1 = pd.read_csv(self.filename,encoding = 'windows-1252').fillna(0)
         self.data_2 = pd.read_csv(self.filename_union,encoding = 'windows-1252').fillna(0)
         if len(self.data_1.columns) == len(self.data_2.columns):
@@ -439,15 +545,26 @@ class Ui_MainWindow(object):
                     self.showdata_table()  
     
     def getFile(self):
+        self.listWidget_2.clear()
+        self.listWidget_3.clear()
+        
         self.filename = QFileDialog.getOpenFileName(filter = "Excel or CSV(*.csv ,*.xls ,*.xlsx ,*.xlsm)")[0]
         if self.filename == "" :
             print("please select file")
         else:
+            global start_ui
+            start_ui = "1"
             print("File :",self.filename)
             self.readData()
+            
 
     
     def getFile_union(self):
+        self.listWidget_2.clear()
+        self.listWidget_3.clear()
+                
+        if start_ui == "0":
+            return print("ERROR IMPORT")
         self.filename_union = QFileDialog.getOpenFileName(filter = "Excel or CSV(*.csv ,*.xls ,*.xlsx ,*.xlsm)")[0]
         if self.filename_union == "" :
             print("please select file")
@@ -455,15 +572,29 @@ class Ui_MainWindow(object):
             print("File :",self.filename_union)
             self.readUnionData()    
     
-    def data_plot(self,fig):
+
+    def getDataFilter(self,data,item): ##recive DataFilter from filterComplete
+        
+        filter_key[item] = data
+        print(filter_key[item])
+
+        
+        # print(filter_data , "zzzzz")
+
+
+    def data_plot(self,fig):        
         global chart
         row_index = []
-        col_index = []
+        col_index = [] 
         encode_list = []
         tooltip_list = []
-        data = []
-        filter_data = []
-        head_filter = []
+        data= []
+
+        
+        
+
+        
+
         for r in range(len(self.listWidget_3)):
             row_index.append(self.listWidget_3.item(r).text())
         for c in range(len(self.listWidget_2)):
@@ -472,14 +603,18 @@ class Ui_MainWindow(object):
             data.append(row_index[data_row])
         for data_col in range(len(col_index)):
             data.append(col_index[data_col])   
-            
+        
+
+                         
         if len(col_index) >= 1 :
             if col_index[0] in Dimension:
                 encode_list.append(alt.X(col_index[0]))
                 tooltip_list.append(col_index[0])
 
             elif col_index[0] in Measurement:
-                encode_list.append(alt.X(f"{op[col_index[0]]}({col_index[0]})")) ## sum(City)
+                if col_index[0] not in op:
+                    op[col_index[0]] = "sum"
+                encode_list.append(alt.X(f"{op[col_index[0]]}({col_index[0]})")) 
                 tooltip_list.append(f"{op[col_index[0]]}({col_index[0]})")     
         
         if len(col_index) >= 2 :
@@ -487,7 +622,9 @@ class Ui_MainWindow(object):
                 encode_list.append(alt.Column(col_index[1]))
                 tooltip_list.append(col_index[1])
 
-            elif col_index[0] in Measurement:
+            elif col_index[1] in Measurement:
+                if col_index[1] not in op:
+                    op[col_index[1]] = "sum"
                 encode_list.append(alt.Column(f"{op[col_index[1]]}({col_index[1]})"))
                 tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")    
             
@@ -498,6 +635,8 @@ class Ui_MainWindow(object):
                 tooltip_list.append(row_index[0])
 
             elif row_index[0] in Measurement:
+                if row_index[0] not in op:
+                    op[row_index[0]] = "sum"
                 encode_list.append(alt.Y(f"{op[row_index[0]]}({row_index[0]})"))
                 tooltip_list.append(f"{op[row_index[0]]}({row_index[0]})")
         if len(row_index) >= 2 :
@@ -506,6 +645,8 @@ class Ui_MainWindow(object):
                 tooltip_list.append(row_index[1])
 
             elif row_index[1] in Measurement:
+                if row_index[1] not in op:
+                    op[row_index[1]] = "sum"
                 encode_list.append(alt.Row(f"{op[row_index[1]]}({row_index[1]})"))
                 tooltip_list.append(f"{op[row_index[1]]}({row_index[1]})")    
         
@@ -521,6 +662,8 @@ class Ui_MainWindow(object):
                         print("Error")
                         pass
                     else:
+                        if col_index[2] not in op:
+                            op[col_index[2]] = "sum"
                         encode_list.append(alt.Color(f"{op[col_index[2]]}({col_index[2]})"))
                         tooltip_list.append(f"{op[col_index[2]]}({col_index[2]})")     
             elif len(row_index) >= 3 :      
@@ -529,67 +672,75 @@ class Ui_MainWindow(object):
                     tooltip_list.append(row_index[2])
 
                 elif row_index[2] in Measurement:
+                    if row_index[2] not in op:
+                        op[row_index[2]] = "sum"
                     encode_list.append(alt.Color(f"{op[row_index[2]]}({row_index[2]})"))
                     tooltip_list.append(f"{op[row_index[2]]}({row_index[2]})")      
 
         
         if fig == "bar":
             filter_str = ""
-            if len(filter_data) > 0:
-                for j in head_filter: 
-                    for i in filter_data:
-                        if i == filter_data[(len(filter_data)-1)]:
-                            filter_str += head_filter[j] +' != "'+i+'"' ' " '
-                        else:
-                            filter_str += head_filter[j] +' != "'+i+'"' +" and "
-            
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data.query(filter_str))
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                )    
-            else:       
-                alt.data_transformers.disable_max_rows()
-
-                chart = (alt.Chart(self.all_data[data])
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .properties(title="line chart")
-                .configure_title(anchor="start")
-                ) 
+            if len(row_index) > 0 or len(col_index) > 0:
+                s = row_index + col_index 
+                for x in range(len(s)):
+                    if s[x] not in filter_key:   
+                        pass
+                    else:    
+                        for i in filter_key[s[x]]:
+                            filter_str += s[x] +' != "'+i+'"' +" and "
+                print(filter_str)                
+                print(filter_str[:-4])
+                if filter_str != "":
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                    )    
+                else:       
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data[data])
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                    ) 
         elif  fig == "line":     
             filter_str = ""
-            if len(filter_data) > 0:
-                for j in head_filter: 
-                    for i in filter_data:
-                        if i == filter_data[(len(filter_data)-1)]:
-                            filter_str += head_filter[j] +' != "'+i+'"' ' " '
-                        else:
-                            filter_str += head_filter[j] +' != "'+i+'"' +" and "
-            
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data.query(filter_str))
-                .mark_line()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                )    
-            else:       
-                alt.data_transformers.disable_max_rows()
-
-                chart = (alt.Chart(self.all_data[data])
-                .mark_line()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                ) 
+            if len(row_index) > 0 or len(col_index) > 0:
+                s = row_index + col_index 
+                for x in range(len(s)):
+                    
+                    if s[x] not in filter_key:   
+                        pass
+                    else:    
+                        for i in filter_key[s[x]]:
+                            filter_str += s[x] +' != "'+i+'"' +" and "
+                        
+                if filter_str != "" :
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                    .mark_line(point=True)
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .properties(title="line chart")
+                    .configure_title(anchor="start")
+                    )    
+                else:       
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data[data])
+                    .mark_line(point=True)
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .properties(title="line chart")
+                    .configure_title(anchor="start")
+                    ) 
                 
+   
     def plot_bar(self): 
+        if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
+            return print("ERROR")   
         bar = "bar"        
         self.data_plot(bar)            
         self.verticalLayout.removeWidget(self.view)
@@ -598,6 +749,8 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.view)
         
     def plot_line(self):
+        if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
+            return print("ERROR")   
         line = "line"
         self.data_plot(line)         
         self.verticalLayout.removeWidget(self.view)
@@ -608,30 +761,62 @@ class Ui_MainWindow(object):
 
 
     def filterup(self):
-        item2 = self.listWidget_2.currentItem()     
+        
+        item2 = self.listWidget_2.currentItem()    
+        itemget = self.listWidget_2 
         if str(item2.text()) in Measurement :
             self.Value = QtWidgets.QMainWindow()
             self.ui = Ui_Value()
             self.ui.setupUi(item2.text(),self.Value)
             self.Value.show()
-        else :
-            print("Not Measurement")
 
+        else:
+            self.Filter_Window = QtWidgets.QMainWindow()
+            self.ui2 = Ui_Filter_Window()
+            self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+            self.Filter_Window.show()
+           
+
+
+        
+    # def filterdataup(self):
+    #     item2 = self.listWidget_2.currentItem()
+    #     for i in self.all_data[item2]:
+    #         self.item = QtWidgets.QListWidgetItem(i)
+    #         self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #         self.item.setCheckState(QtCore.Qt.Checked)
+    #         self.listWidget.addItem(self.item)
 
 
     def filterdown(self):
         item3 = self.listWidget_3.currentItem()
+        itemget = self.listWidget_3
         if str(item3.text()) in Measurement :
             self.Value = QtWidgets.QMainWindow()
             self.ui = Ui_Value()
             self.ui.setupUi(item3.text(),self.Value)
             self.Value.show()
         else :
-            print("Not Measurement")
+            self.Filter_Window = QtWidgets.QMainWindow()
+            self.ui2 = Ui_Filter_Window()
+            self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+            self.Filter_Window.show()
+
+
+    # def filterdatadown(self):
+    #     item3 = self.listWidget_3.currentItem()
+    #     for i in self.all_data[item3]:
+    #         self.item = QtWidgets.QListWidgetItem(i)
+    #         self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+    #         self.item.setCheckState(QtCore.Qt.Checked)
+    #         self.listWidget.addItem(self.item)
+
 
 
 
 if __name__ == "__main__":
+    global start_ui
+    start_ui = "0"
     import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
