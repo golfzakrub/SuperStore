@@ -818,7 +818,7 @@ class Ui_MainWindow(object):
         item2 = self.listWidget_2.currentItem()    
         itemget = self.listWidget_2 
         if "(" in self.listWidget_2.currentItem().text():
-            if str(item2.text()[item2.text()[item2.text().index("(")+1:item2.text().index(")")]]) in Measurement :
+            if str(item2.text()[item2.text().index("(")+1:item2.text().index(")")]) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
                 self.ui = Ui_Value()
                 self.ui.setupUi(item2,self.Value)
@@ -866,7 +866,7 @@ class Ui_MainWindow(object):
             else :
                 self.Filter_Window = QtWidgets.QMainWindow()
                 self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3,self.Filter_Window,itemget,self.all_data)
+                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
                 self.Filter_Window.show()
 
 
