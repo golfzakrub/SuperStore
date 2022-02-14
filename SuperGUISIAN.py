@@ -282,7 +282,7 @@ class Ui_Value(object):
 
     ### Add function in here!!!!##################################
     def applyValue(self,item,Value):
-        if self.checkBox.isChecked():
+        if self.checkBox.isChecked(): #Tran Hash to text code
             print ("Sum")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "sum"
@@ -665,12 +665,8 @@ class Ui_MainWindow(object):
         encode_list = []
         tooltip_list = []
         data= []
-
-        
-        
-
-        
-
+ 
+        #Check Listbox
         for r in range(len(self.listWidget_3)):            
             if "(" in self.listWidget_3.item(r).text() :
                 row_index.append(self.listWidget_3.item(r).text()[self.listWidget_3.item(r).text().index("(")+1:self.listWidget_3.item(r).text().index(")")])
@@ -687,7 +683,7 @@ class Ui_MainWindow(object):
             data.append(col_index[data_col])   
         
 
-                         
+       # Set encode_list , tooltip_list for plot Requirement                  
         if len(col_index) >= 1 :
             if col_index[0] in Dimension:
                 encode_list.append(alt.X(col_index[0]))
@@ -842,7 +838,8 @@ class Ui_MainWindow(object):
         
 
 
-    def filterup(self):
+    def filterup(self): 
+        #send hash to apply button for tran to text value
         
         item2 = self.listWidget_2.currentItem()    
         itemget = self.listWidget_2 
