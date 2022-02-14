@@ -8,8 +8,22 @@ import  pandas as pd
 from io import StringIO
 import altair as alt
 from PyQt5.QtCore import QDataStream, Qt
+import json
 
+class headTopic:  
+    def __init__(self): 
+        self.data_head = {"topic":[],"Dimeasion":[],"Measurement":[]} 
+               
+    def get_backup(self):
+        with open('data_head.json','r') as head_file:
+            self.data_head = json.load(head_file)
+        return self.data_head
+    
+    def backup_head(self):
+        with open('data_head.json', 'w') as head_file:
+            json.dump(self.data_head, head_file)
 
+            
 class WebEngineView(QtWebEngineWidgets.QWebEngineView):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -443,7 +457,7 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(self.getFile)
         self.Plot_Bar_Button.clicked.connect(self.plot_bar)
         self.Plot_line_Button.clicked.connect(self.plot_line)
-        self.Default_Button.clicked.connect(self.showdata_head)
+        self.Default_Button.clicked.connect(self.showdata_head_backup)
         self.Update_Button.clicked.connect(self.update_head)
         self.Union_Button_2.clicked.connect(self.getFile_union)
 
@@ -491,52 +505,53 @@ class Ui_MainWindow(object):
         head_filter = []
         op = {}
         filter_key = {}
-        global Dimension,Measurement,Dimension_backup,Measurement_backup,Dimension_number
+        global Dimension,Measurement,Dimension_number
         Dimension = []
         Measurement = []
         Dimension_number = []
-        Dimension_backup = []
-        Measurement_backup = []
+        Topic = headTopic()
+        Topic.backup_head()
+        data_head_backup = Topic.get_backup()
+        print(data_head_backup)
         for x in self.all_data.columns:
+            data_head_backup["topic"].append(str(x))
             if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
                 if "ID" in x or "Code" in x or "Date" in x:
                     self.all_data[x] = self.all_data[x].astype(str)
                     Dimension.append(str(x))
                     Dimension_number.append(str(x))
-                    Dimension_backup.append(str(x))
+                    data_head_backup["Dimeasion"].append(str(x))
                     self.listWidget.addItem(str(x))
                 else :
                     Measurement.append(x)
-                    Measurement_backup.append(x)
+                    data_head_backup["Measurement"].append(str(x))
                     self.listWidget_4.addItem(x)
             elif self.all_data[x].dtypes == 'object':
                 Dimension.append(x)
-                Dimension_backup.append(str(x))
+                data_head_backup["Dimeasion"].append(str(x))
                 self.listWidget.addItem(x)
-        
+            Topic.backup_head()
+            
     def update_head(self):
+        Topic = headTopic()
+        data_head_backup = Topic.get_backup()
         if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
             return print("ERROR")   
-        print(Dimension,Measurement,Dimension_backup,Measurement_backup)
         for Dimension_head in range(len(self.listWidget)):
             if "(" in self.listWidget.item(Dimension_head).text():
                 self.listWidget.item(Dimension_head).setText(self.listWidget.item(Dimension_head).text()[self.listWidget.item(Dimension_head).text().index("(")+1:self.listWidget.item(Dimension_head).text().index(")")])            
             if self.listWidget.item(Dimension_head).text() not in Dimension:
-                if self.listWidget.item(Dimension_head).text() in Measurement_backup :
+                if self.listWidget.item(Dimension_head).text() in data_head_backup["Measurement"] :
                     Dimension.append(self.listWidget.item(Dimension_head).text())
-                    print(Dimension_head)
-                    print(self.listWidget.item(Dimension_head).text())
                     Measurement.remove(self.listWidget.item(Dimension_head).text())
                     self.all_data[self.listWidget.item(Dimension_head).text()] = self.all_data[self.listWidget.item(Dimension_head).text()].astype(str)
 
                 elif self.listWidget.item(Dimension_head).text() in Dimension_number :
                     Dimension.append(self.listWidget.item(Dimension_head).text())
-                    print(Dimension_head)
-                    print(self.listWidget.item(Dimension_head).text())
                     Measurement.remove(self.listWidget.item(Dimension_head).text())
                     self.all_data[self.listWidget.item(Dimension_head).text()] = self.all_data[self.listWidget.item(Dimension_head).text()].astype(str) 
                 
-                elif  self.listWidget.item(Dimension_head).text() in Dimension_backup : 
+                elif  self.listWidget.item(Dimension_head).text() in data_head_backup["Dimeasion"] : 
                     Dimension.append(self.listWidget.item(Dimension_head).text())
                     Measurement.remove(self.listWidget.item(Dimension_head).text())         
         
@@ -552,7 +567,7 @@ class Ui_MainWindow(object):
                     else:
                         self.all_data[self.listWidget_4.item(Measurement_head).text()] = self.all_data[self.listWidget_4.item(Measurement_head).text()].astype(int)
                 
-                elif self.listWidget_4.item(Measurement_head).text() in Measurement_backup:
+                elif self.listWidget_4.item(Measurement_head).text() in data_head_backup["Measurement"]:
                     Dimension.remove(self.listWidget_4.item(Measurement_head).text())
                     Measurement.append(self.listWidget_4.item(Measurement_head).text())
                     if "." in self.all_data[self.listWidget_4.item(Measurement_head).text()][0]:
@@ -560,9 +575,23 @@ class Ui_MainWindow(object):
                     else:
                         self.all_data[self.listWidget_4.item(Measurement_head).text()] = self.all_data[self.listWidget_4.item(Measurement_head).text()].astype(int)                    
                 
-                elif  self.listWidget_4.item(Measurement_head).text() in Dimension_backup:
+                elif  self.listWidget_4.item(Measurement_head).text() in data_head_backup["Dimension"]:
                     Dimension.remove(self.listWidget_4.item(Measurement_head).text())
                     Measurement.append(self.listWidget_4.item(Measurement_head).text())
+    
+    def showdata_head_backup(self):
+        if start_ui == "0":
+            return print("ERROR IMPORT")
+        self.listWidget.clear()
+        self.listWidget_4.clear()
+        Topic = headTopic()
+        data_head_backup = Topic.get_backup()
+        print(data_head_backup["Dimeasion"],data_head_backup["Measurement"])
+        for i in data_head_backup["Dimeasion"]:
+            self.listWidget.addItem(i)
+        for x in data_head_backup["Measurement"]:
+            self.listWidget_4.addItem(x)
+            
     
     def showdata_table(self):  
         self.tableWidget.clear()
@@ -818,7 +847,7 @@ class Ui_MainWindow(object):
         item2 = self.listWidget_2.currentItem()    
         itemget = self.listWidget_2 
         if "(" in self.listWidget_2.currentItem().text():
-            if str(item2.text()[item2.text()[item2.text().index("(")+1:item2.text().index(")")]]) in Measurement :
+            if str(item2.text()[item2.text().index("(")+1:item2.text().index(")")]) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
                 self.ui = Ui_Value()
                 self.ui.setupUi(item2,self.Value)
@@ -827,13 +856,13 @@ class Ui_MainWindow(object):
             else:
                 self.Filter_Window = QtWidgets.QMainWindow()
                 self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item2,self.Filter_Window,itemget,self.all_data)
+                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
                 self.Filter_Window.show()
         else:
             if str(item2.text()) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
                 self.ui = Ui_Value()
-                self.ui.setupUi(item2.text(),self.Value)
+                self.ui.setupUi(item2,self.Value)
                 self.Value.show()
 
             else:
@@ -855,7 +884,7 @@ class Ui_MainWindow(object):
             else :
                 self.Filter_Window = QtWidgets.QMainWindow()
                 self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3,self.Filter_Window,itemget,self.all_data)
+                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
                 self.Filter_Window.show()               
         else:
             if str(item3.text()) in Measurement :
@@ -866,7 +895,7 @@ class Ui_MainWindow(object):
             else :
                 self.Filter_Window = QtWidgets.QMainWindow()
                 self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3,self.Filter_Window,itemget,self.all_data)
+                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
                 self.Filter_Window.show()
 
 
