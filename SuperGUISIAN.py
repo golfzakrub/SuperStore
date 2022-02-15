@@ -311,7 +311,6 @@ class Ui_Value(object):
             print ("Sum")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "sum"
-                item.setText("sum("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -320,24 +319,27 @@ class Ui_Value(object):
                     if self.comboBox.currentText() == "":
                         print("No operator")
                     if toText =="":
-                        print("No range Value")                
+                        print("No range Value")
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""]
+                item.setText("sum("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
             else:
                 op[str(item.text())] = "sum"
-                item.setText("sum("+item.text()+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
                     print("Range = ", toText)
                 else:
-                    if self.comboBox.currentText() == "":
+                    if self.comboBox.currentText() == "":                        
                         print("No operator")
                     if toText =="":
                         print("No range Value")
+                    op_C[str(item.text())] = ["",""] 
+                item.setText("sum("+item.text()+")")
+                
         elif self.checkBox_2.isChecked():
             print ("Max")         
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "max"
-                item.setText("max("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -346,10 +348,12 @@ class Ui_Value(object):
                     if self.comboBox.currentText() == "":
                         print("No operator")
                     if toText =="":
-                        print("No range Value") 
+                        print("No range Value")
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""]
+                    item.setText("max("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+                
             else:
                 op[str(item.text())] = "max"
-                item.setText("max("+item.text()+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -359,12 +363,13 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
-
+                    op_C[str(item.text())] = ["",""]
+                item.setText("max("+item.text()+")")
+                        
         elif self.checkBox_3.isChecked():
             print ("Min")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "min"
-                item.setText("min("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -373,10 +378,12 @@ class Ui_Value(object):
                     if self.comboBox.currentText() == "":
                         print("No operator")
                     if toText =="":
-                        print("No range Value") 
+                        print("No range Value")
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""] 
+                item.setText("min("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")  
+                    
             else:
                 op[str(item.text())] = "min"
-                item.setText("min("+item.text()+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -386,12 +393,13 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
-
+                    op_C[str(item.text())] = ["",""]
+                item.setText("min("+item.text()+")")
+                        
         elif self.checkBox_4.isChecked():
             print ("Mean")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "mean"
-                item.setText("mean("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -400,10 +408,12 @@ class Ui_Value(object):
                     if self.comboBox.currentText() == "":
                         print("No operator")
                     if toText =="":
-                        print("No range Value")                
+                        print("No range Value")
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""]  
+                item.setText("mean("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")  
+                                  
             else:
                 op[str(item.text())] = "mean"
-                item.setText("mean("+item.text()+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -413,12 +423,13 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
+                    op_C[str(item.text())] = ["",""]
+                item.setText("mean("+item.text()+")")     
 
         elif self.checkBox_5.isChecked():
             print ("Median")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "median"
-                item.setText("median("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -428,10 +439,11 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""]
+                item.setText("median("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")    
 
             else:
                 op[str(item.text())] = "median"
-                item.setText("median("+item.text()+")")
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -441,13 +453,13 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
-
+                    op_C[str(item.text())] = ["",""]
+                item.setText("median("+item.text()+")")
 
         elif self.checkBox_6.isChecked():
             print ("Count")
             if "(" in item.text():
                 op[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = "count"
-                item.setText("count("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
 
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = [self.comboBox.currentText(),toText]
@@ -458,11 +470,11 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
-
+                    op_C[str(item.text()[item.text().index("(")+1:item.text().index(")")])] = ["",""]
+                item.setText("count("+item.text()[item.text().index("(")+1:item.text().index(")")]+")")
+                        
             else:
-                op[str(item.text())] = "count"
-                item.setText("count("+item.text()+")")
-                
+                op[str(item.text())] = "count"                
                 if self.comboBox.currentText() != "" and toText !="":
                     op_C[str(item.text())] = [self.comboBox.currentText(),toText]
                     print("Oprerator =", self.comboBox.currentText())
@@ -472,10 +484,8 @@ class Ui_Value(object):
                         print("No operator")
                     if toText =="":
                         print("No range Value")
-        
-
-        # print(self.comboBox.currentText())
-
+                    op_C[str(item.text())] = ["",""]
+                item.setText("count("+item.text()+")")       
 
         else:
             print("please check filterValue")
@@ -670,7 +680,6 @@ class Ui_MainWindow(object):
         filter_key = {}
         op_C = {}
         
-
         global Dimension,Measurement,Dimension_number,number,string
         Dimension = []
         Measurement = []
@@ -913,7 +922,9 @@ class Ui_MainWindow(object):
                     if col_index[1] not in op:
                         op[col_index[1]] = "sum"
                     encode_list.append(alt.X2(f"{op[col_index[1]]}({col_index[1]})"))
-                    tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")                      
+                    tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")
+                    
+                                          
                 else:  
                     if col_index[1] not in op:
                         op[col_index[1]] = "sum"
@@ -980,24 +991,31 @@ class Ui_MainWindow(object):
                     else:    
                         for i in filter_key[s[x]]:
                             filter_str += s[x] +' != "'+i+'"' +" and "
-
-                if filter_str != "":
-                    alt.data_transformers.disable_max_rows()
-                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
-                    .mark_bar()
-                    .encode(*encode_list, tooltip =tooltip_list)
-                    .resolve_scale(x="independent",y="independent")
-                    .properties(title="bar chart")
-                    .configure_title(anchor="start")
-                    )    
-                else:       
-                    alt.data_transformers.disable_max_rows()
-                    chart = (alt.Chart(self.all_data[data])
-                    .mark_bar()
-                    .encode(*encode_list, tooltip =tooltip_list)
-                    .resolve_scale(x="independent",y="independent")
-                    .properties(title="bar chart")
-                    .configure_title(anchor="start")
+                for z in range(len(s)):
+                    if s[z] not in op_C:   
+                        pass
+                    else:    
+                        if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
+                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+            print("OPC",op_C)                   
+            print(filter_str)
+            if filter_str != "":
+                alt.data_transformers.disable_max_rows()
+                chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                .mark_bar()
+                .encode(*encode_list, tooltip =tooltip_list)
+                .resolve_scale(x="independent",y="independent")
+                .properties(title="bar chart")
+                .configure_title(anchor="start")
+                )    
+            else:       
+                alt.data_transformers.disable_max_rows()
+                chart = (alt.Chart(self.all_data[data])
+                .mark_bar()
+                .encode(*encode_list, tooltip =tooltip_list)
+                .resolve_scale(x="independent",y="independent")
+                .properties(title="bar chart")
+                .configure_title(anchor="start")
                     ) 
         elif  fig == "line":     
             filter_str = ""
@@ -1009,7 +1027,13 @@ class Ui_MainWindow(object):
                     else:    
                         for i in filter_key[s[x]]:
                             filter_str += s[x] +' != "'+i+'"' +" and "
-                        
+                for z in range(len(s)):
+                    if s[z] not in op_C:   
+                        pass
+                    else:    
+                        if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
+                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                                                    
                 if filter_str != "" :
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
@@ -1075,7 +1099,13 @@ class Ui_MainWindow(object):
                 else:    
                     for i in filter_key[s[x]]:
                         filter_str += s[x] +' != "'+i+'"' +" and "
-                        
+            for z in range(len(s)):
+                if s[z] not in op_C:   
+                    pass
+                else:
+                    if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":    
+                        filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
+                                        
         if filter_str != "":
             print(filter_str)
             self.tableWidget_2.setColumnCount(len(col_index))
