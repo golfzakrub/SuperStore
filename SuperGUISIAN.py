@@ -363,6 +363,14 @@ class Ui_MainWindow(object):
         self.tableWidget.setColumnCount(0)
         self.tableWidget.setRowCount(0)
         self.tabWidget.addTab(self.DataFrame, "")
+        self.tab = QtWidgets.QWidget()
+        self.tab.setObjectName("tab")
+        self.tableWidget_2 = QtWidgets.QTableWidget(self.tab)
+        self.tableWidget_2.setGeometry(QtCore.QRect(0, 0, 671, 601))
+        self.tableWidget_2.setObjectName("tableWidget_2")
+        self.tableWidget_2.setColumnCount(0)
+        self.tableWidget_2.setRowCount(0)
+        self.tabWidget.addTab(self.tab, "")
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.listWidget_2 = QtWidgets.QListWidget(self.tab_3)
@@ -427,6 +435,11 @@ class Ui_MainWindow(object):
         self.Default_Button.setCheckable(False)
         self.Default_Button.setAutoDefault(False)
         self.Default_Button.setObjectName("Default_Button")
+
+        self.Save_Button = QtWidgets.QPushButton(self.centralwidget)
+        self.Save_Button.setGeometry(QtCore.QRect(210, 10, 75, 23))
+        self.Save_Button.setObjectName("Save_button")
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1107, 21))
@@ -480,6 +493,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sianbleau"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DataFrame), _translate("MainWindow", "Data"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Table"))
         self.label_2.setText(_translate("MainWindow", "Column"))
         self.label_3.setText(_translate("MainWindow", "Row"))
         self.Plot_Bar_Button.setText(_translate("MainWindow", "Bar Plot"))
@@ -493,6 +507,7 @@ class Ui_MainWindow(object):
         self.Update_Button.setText(_translate("MainWindow", "Update"))
         self.Default_Button.setText(_translate("MainWindow", "Default"))
         self.Union_Button_2.setText(_translate("MainWindow", "Union"))
+        self.Save_Button.setText(_translate("MainWindow", "Save"))
         
 
     def showdata_head(self):
@@ -683,7 +698,7 @@ class Ui_MainWindow(object):
             data.append(col_index[data_col])   
         
 
-       # Set encode_list , tooltip_list for plot Requirement                  
+       # Set encode_list , tooltip_list for plot                      
         if len(col_index) >= 1 :
             if col_index[0] in Dimension:
                 encode_list.append(alt.X(col_index[0]))
