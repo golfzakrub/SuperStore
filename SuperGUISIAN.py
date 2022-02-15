@@ -136,8 +136,7 @@ class Ui_Filter_Window(object):
             self.item = QtWidgets.QListWidgetItem(i)
             self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
             self.item.setCheckState(QtCore.Qt.Checked)
-            self.listWidget.addItem(self.item)
-        print("----------------------Filter-------------------------")       
+            self.listWidget.addItem(self.item)       
 
 
 
@@ -148,8 +147,6 @@ class Ui_Filter_Window(object):
         for i in range(self.listWidget.count()):
             if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
                 self.getCheckItem.append(self.listWidget.item(i).text())
-        print(self.getCheckItem)
-        print(self.item)
         Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)
         
         
@@ -530,9 +527,7 @@ class Ui_MainWindow(object):
         string = []
         Topic = headTopic()
         data_head_backup = Topic.get_backup()      
-        print(namefile)
         if namefile not in data_head_backup:
-            print(data_head_backup)
             data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] }
             for x in self.all_data.columns:
                 if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
@@ -555,7 +550,6 @@ class Ui_MainWindow(object):
                     self.listWidget.addItem(x)
                 Topic.backup_head()
         else:
-            print("sd")
             for i in data_head_backup[namefile]["Dimension"]:
                 self.listWidget.addItem(i)
                 Dimension.append(i)
@@ -658,6 +652,7 @@ class Ui_MainWindow(object):
     def showdata_table(self):  
         self.tableWidget.clear()
         numcolumn = len(self.all_data)
+        print(len(self.all_data))
         if numcolumn == 0:
             numRows = len(self.all_data.index)
         else:
@@ -729,12 +724,7 @@ class Ui_MainWindow(object):
         encode_list = []
         tooltip_list = []
         data= []
-
         
-        
-
-        
-
         for r in range(len(self.listWidget_3)):            
             if "(" in self.listWidget_3.item(r).text() :
                 row_index.append(self.listWidget_3.item(r).text()[self.listWidget_3.item(r).text().index("(")+1:self.listWidget_3.item(r).text().index(")")])
@@ -749,9 +739,7 @@ class Ui_MainWindow(object):
             data.append(row_index[data_row])
         for data_col in range(len(col_index)):
             data.append(col_index[data_col])   
-        
-
-                         
+                              
         if len(col_index) >= 1 :
             if col_index[0] in Dimension:
                 encode_list.append(alt.X(col_index[0]))
@@ -863,8 +851,7 @@ class Ui_MainWindow(object):
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
                 s = row_index + col_index 
-                for x in range(len(s)):
-                    
+                for x in range(len(s)):                    
                     if s[x] not in filter_key:   
                         pass
                     else:    
@@ -898,6 +885,7 @@ class Ui_MainWindow(object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
+        self.gridtable()
         
     def plot_line(self):
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
@@ -908,8 +896,50 @@ class Ui_MainWindow(object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
+        self.gridtable()
         
+    def gridtable(self):
+        col_index = []
+        for col in range(len(self.listWidget_2)):
+            col_text = self.listWidget_2.item(col).text()
+            if "(" in col_text :
+                col_index.append(col_text[col_text.index("(")+1:col_text.index(")")]) 
+            else:
+                col_index.append(col_text)
+        for row in range(len(self.listWidget_3)):
+            row_text = self.listWidget_3.item(row).text()
+            if "(" in row_text :
+                col_index.append(row_text[row_text.index("(")+1:row_text.index(")")]) 
+            else:           
+                col_index.append(row_text)
 
+                
+        filter_str = ""
+        if  len(col_index) > 0:
+            s = col_index 
+            for x in range(len(s)):               
+                if s[x] not in filter_key:   
+                    pass
+                else:    
+                    for i in filter_key[s[x]]:
+                        filter_str += s[x] +' != "'+i+'"' +" and "
+                        
+        if filter_str != "":
+            print(filter_str)
+            self.tableWidget_2.setColumnCount(len(col_index))
+            self.tableWidget_2.setRowCount(len(self.all_data.query(filter_str[:-4])))
+            self.tableWidget_2.setHorizontalHeaderLabels(col_index)
+            for i in range(len(self.all_data.query(filter_str[:-4]))):
+                for j in range(len(col_index)):        
+                    self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].query(filter_str[:-4]).iat[i,j]))) 
+        else :
+            self.tableWidget_2.setColumnCount(len(col_index))
+            self.tableWidget_2.setRowCount(len(self.all_data))
+            self.tableWidget_2.setHorizontalHeaderLabels(col_index)
+            for i in range(len(self.all_data[col_index])):
+                for j in range(len(col_index)):        
+                    self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].iat[i,j]))) 
+           
 
     def filterup(self):       
         item2 = self.listWidget_2.currentItem()    
