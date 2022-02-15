@@ -999,24 +999,96 @@ class Ui_MainWindow(object):
                             filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
             print("OPC",op_C)                   
             print(filter_str)
-            if filter_str != "":
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                )    
-            else:       
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data[data])
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                    ) 
+            Plot_Multi_Measurement_Col = []
+            Plot_Multi_Measurement_Row = []
+            count_Row = 0
+            count_Column = 0
+            Alt_Axis_list = []
+            col_Measure = []
+            row_Measure = []
+            chart_list = []
+            for col in col_index:
+                if col in Measurement:
+                    count_Column +=1
+                    col_Measure.append(col)
+            for row in row_index:
+                if row in Measurement:
+                    count_Row += 1
+                    row_Measure.append(row)
+
+            if count_Column > 1:
+                if count_Column >=1:
+                    Alt_Axis_list.append(col_Measure[0])
+                if count_Column >=2:
+                    Alt_Axis_list.append(col_Measure[1])
+            
+            # 1 row Dimension
+            if len(row_index) == 1:
+                print(type(Alt_Axis_list))
+                for j in range(len(Alt_Axis_list)):
+                    chart_list.append(f"chart{j}")
+                for i in Alt_Axis_list:
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart_list[i] = (alt.Chart(self.all_data[data])
+                        .mark_bar()
+                        .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent",y="independent")
+                        .properties(title="bar chart")
+                        .configure_title(anchor="start")  
+                        )  
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_bar()
+                        .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent",y="independent")
+                        .properties(title="bar chart")
+                        .configure_title(anchor="start")
+                        )
+                
+                for k in range(count_Column):
+                    if k == len(Alt_Axis_list[0]):
+                        chart = Alt_Axis_list[k]
+
+                    if k == len(Alt_Axis_list[k-1]):
+                        Alt_Axis_list[k]
+                       
+                    else:
+                        chart = chart | Alt_Axis_list[k+1]
+                        
+                         
+                        
+            
+
+
+            if count_Row > 1:
+                if count_Row >=1:
+                    Alt_Axis_list.append(row_Measure[0])
+                if count_Row >=2:
+                    Alt_Axis_list.append(row_Measure[1])
+            
+            
+            else:
+
+                if filter_str != "":
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                    )    
+                else:       
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data[data])
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                            ) 
         elif  fig == "line":     
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
