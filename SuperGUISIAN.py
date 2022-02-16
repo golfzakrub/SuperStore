@@ -1000,8 +1000,7 @@ class Ui_MainWindow(object):
                             filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
             print("OPC",op_C)                   
             print(filter_str)
-            Plot_Multi_Measurement_Col = []
-            Plot_Multi_Measurement_Row = []
+
             count_Row = 0
             count_Column = 0
             Alt_Axis_list = []
@@ -1032,7 +1031,7 @@ class Ui_MainWindow(object):
             print(type(Alt_Axis_list))
             print(Alt_Axis_list)
             print(row_index)
-            
+
             #meassure 2 or more
             if count_Column >1 or count_Row >1 :
             # 1 row Dimension Many Col Measurement
@@ -1237,7 +1236,10 @@ class Ui_MainWindow(object):
                     .properties(title="bar chart")
                     .configure_title(anchor="start")
                     )
-                    
+
+
+
+        ###LINE CHART            
         elif  fig == "line":     
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
@@ -1255,22 +1257,242 @@ class Ui_MainWindow(object):
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
                             filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
                                                     
-                if filter_str != "" :
+            count_Row = 0
+            count_Column = 0
+            Alt_Axis_list = []
+            col_Measure = []
+            row_Measure = []
+            chart_list = []
+            
+            #count col
+            for col in col_index:
+                if col in Measurement:
+                    count_Column +=1
+                    col_Measure.append(col)
+            #count row
+            for row in row_index:
+                if row in Measurement:
+                    count_Row += 1
+                    row_Measure.append(row)
+            # append data
+            
+            if count_Column >= 1:
+                for count_col in range(count_Column) :
+                    Alt_Axis_list.append(col_Measure[count_col])
+
+            elif count_Row >= 1:
+                for count_R in range(count_Row) :
+                    Alt_Axis_list.append(row_Measure[count_R])            
+            
+            print(type(Alt_Axis_list))
+            print(Alt_Axis_list)
+            print(row_index)
+
+            #meassure 2 or more
+            if count_Column >1 or count_Row >1 :
+            # 1 row Dimension Many Col Measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0
+
+
+                        
+                # 1 Col Dimension Many Row Measurement
+                #      
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                
+
+
+                #2 row Dimension Many Col Measurement
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+                #2 col Dimension Many Row Measurement    
+                        
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                      
+                
+                #3 Row Dimension 1 Measurement 
+
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+                #3 Col Dimension 1 Measurement 
+
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0     
+            
+            
+            else:
+
+                if filter_str != "":
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
-                    .mark_line(point=True)
+                    .mark_line()
                     .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
                     .properties(title="line chart")
                     .configure_title(anchor="start")
                     )    
                 else:       
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data[data])
-                    .mark_line(point=True)
+                    .mark_line()
                     .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
                     .properties(title="line chart")
                     .configure_title(anchor="start")
-                    ) 
+                    )
+
                 
    
     def plot_bar(self): 
