@@ -775,49 +775,91 @@ class Ui_MainWindow(object):
 
     def drill_down_up(self):
         head_columns = []
+        list_widget = []
+        list_widget_not_select = []
         for i in self.all_data.columns:
-            head_columns.append(i)
-        item4 = self.listWidget_2.currentItem().text()
-        print(head_columns)
-        if "Date" in item4:
-            if "Day" in item4:
-                self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-4]+" Month")]) 
-            elif "Month" in item4:
-                self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-6]+" Year")])     
-            elif "Year" in item4:
-                pass
-            else:    
-                self.listWidget_2.addItem(head_columns[head_columns.index(item4+" Day")])
-        elif item4 == head_columns[-1]:
-            pass            
+            head_columns.append(i)   
+        
+        if  "(" in self.listWidget_2.currentItem().text():
+            item4 = self.listWidget_2.currentItem().text()[self.listWidget_2.currentItem().text().index("(")+1:self.listWidget_2.currentItem().text().index(")")]
         else:
-            if "Day" in head_columns[head_columns.index(item4)+1]:
-                pass
+            item4 = self.listWidget_2.currentItem().text()
+            
+        for x in  range(len(self.listWidget_2)):
+            if "(" in self.listWidget_2.item(x).text():
+                if self.listWidget_2.item(x).text() != item4:
+                    list_widget.append(self.listWidget_2.item(x).text()[self.listWidget_2.item(x).text().index("(")+1:self.listWidget_2.item(x).text().index(")")])
+                list_widget_not_select.append(self.listWidget_2.item(x).text()[self.listWidget_2.item(x).text().index("(")+1:self.listWidget_2.item(x).text().index(")")])            
             else:
-                self.listWidget_2.addItem(head_columns[head_columns.index(item4)+1]) 
+                if self.listWidget_2.item(x).text() != item4:
+                    list_widget.append(self.listWidget_2.item(x).text())
+                list_widget_not_select.append(self.listWidget_2.item(x).text())
+        if item4 in list_widget_not_select:
+            if "Date" in item4:
+                if "Day" in item4:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget: 
+                        self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-4]+" Month")]) 
+                elif "Month" in item4:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget: 
+                        self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-6]+" Year")])     
+                elif "Year" in item4:
+                    pass
+                else:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget:     
+                        self.listWidget_2.addItem(head_columns[head_columns.index(item4+" Day")])
+            elif item4 == head_columns[-1]:
+                pass            
+            else:
+                if "Day" in head_columns[head_columns.index(item4)+1]:
+                    pass
+                else:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget: 
+                        self.listWidget_2.addItem(head_columns[head_columns.index(item4)+1]) 
         
     def drill_down_down(self):
         head_columns = []
+        list_widget = []
+        list_widget_not_select = []
         for i in self.all_data.columns:
             head_columns.append(i)
-        item4 = self.listWidget_3.currentItem().text()
-        print(head_columns)
-        if "Date" in item4:
-            if "Day" in item4:
-                self.listWidget_3.addItem(head_columns[head_columns.index(item4[-4]+" Month")]) 
-            elif "Month" in item4:
-                self.listWidget_3.addItem(head_columns[head_columns.index(item4[-6]+" Year")])     
-            elif "Year" in item4:
-                pass
-            else:    
-                self.listWidget_3.addItem(head_columns[head_columns.index(item4+" Day")])
-        elif item4 == head_columns[-1]:
-            pass            
+        
+        if  "(" in self.listWidget_3.currentItem().text():
+            item4 = self.listWidget_3.currentItem().text()[self.listWidget_3.currentItem().text().index("(")+1:self.listWidget_3.currentItem().text().index(")")]
         else:
-            if "Day" in head_columns[head_columns.index(item4)+1]:
-                pass
+            item4 = self.listWidget_3.currentItem().text()
+            
+        for x in  range(len(self.listWidget_3)):
+            if "(" in self.listWidget_3.item(x).text():
+                if self.listWidget_3.item(x).text() != item4:
+                    list_widget.append(self.listWidget_3.item(x).text()[self.listWidget_3.item(x).text().index("(")+1:self.listWidget_3.item(x).text().index(")")])
+                list_widget_not_select.append(self.listWidget_3.item(x).text()[self.listWidget_3.item(x).text().index("(")+1:self.listWidget_3.item(x).text().index(")")])            
             else:
-                self.listWidget_3.addItem(head_columns[head_columns.index(item4)+1]) 
+                if self.listWidget_3.item(x).text() != item4:
+                    list_widget.append(self.listWidget_3.item(x).text())
+                list_widget_not_select.append(self.listWidget_3.item(x).text()) 
+
+        if item4 in list_widget_not_select:
+            if "Date" in item4:
+                if "Day" in item4:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget:    
+                        self.listWidget_3.addItem(head_columns[head_columns.index(item4[-4]+" Month")]) 
+                elif "Month" in item4:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget:
+                        self.listWidget_3.addItem(head_columns[head_columns.index(item4[-6]+" Year")])     
+                elif "Year" in item4:
+                    pass
+                else:
+                    if head_columns[head_columns.index(item4)+1] not in list_widget:    
+                        self.listWidget_3.addItem(head_columns[head_columns.index(item4+" Day")])
+            elif item4 == head_columns[-1]:
+                pass            
+            else:
+                if "Day" in head_columns[head_columns.index(item4)+1]:
+                    pass
+                else:
+                    print("sad")
+                    if head_columns[head_columns.index(item4)+1] not in list_widget:
+                        self.listWidget_3.addItem(head_columns[head_columns.index(item4)+1]) 
 
     def update_head(self):
         if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
