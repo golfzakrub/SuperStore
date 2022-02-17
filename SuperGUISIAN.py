@@ -1966,7 +1966,10 @@ class Ui_MainWindow(object):
         dimension_list = []
         measurement_list = []
         for j in range(len(self.listWidget_2)):
-            temp.append(self.listWidget_2.item(j).text())
+            if "(" in self.listWidget_2.item(j).text():
+                temp.append(self.listWidget_2.item(j).text()[self.listWidget_2.item(j).text().index("(")+1:-1])
+            else:
+                temp.append(self.listWidget_2.item(j).text())
             
         for x in range(len(self.listWidget)):
             dimension_list.append(self.listWidget.item(x).text())
@@ -1975,12 +1978,15 @@ class Ui_MainWindow(object):
 
         for i in temp:
             if i not in dimension_list or i not in measurement_list :
-                if i in Dimension:
-                     if i not in dimension_list:
-                        self.listWidget.addItem(i)
+                if "Year" in i or "Month" in i or "Day" in i :
+                    pass
                 else:
-                     if i not in measurement_list:
-                        self.listWidget_4.addItem(i)
+                    if i in Dimension:
+                        if i not in dimension_list:
+                            self.listWidget.addItem(i)
+                    else:
+                        if i not in measurement_list:
+                            self.listWidget_4.addItem(i)
    
         self.listWidget_2.clear()
       
@@ -1989,7 +1995,10 @@ class Ui_MainWindow(object):
         dimension_list = []
         measurement_list = []
         for j in range(len(self.listWidget_3)):
-            temp.append(self.listWidget_3.item(j).text())
+            if "(" in self.listWidget_3.item(j).text():
+                temp.append(self.listWidget_3.item(j).text()[self.listWidget_3.item(j).text().index("(")+1:-1])
+            else:
+                temp.append(self.listWidget_3.item(j).text())
             
         for x in range(len(self.listWidget)):
             dimension_list.append(self.listWidget.item(x).text())
@@ -1998,14 +2007,17 @@ class Ui_MainWindow(object):
 
         for i in temp:
             if i not in dimension_list or i not in measurement_list :
-                if i in Dimension:
-                     if i not in dimension_list:
-                        self.listWidget.addItem(i)
+                if "Year" in i or "Month" in i or "Day" in i :
+                    pass
                 else:
-                     if i not in measurement_list:
-                        self.listWidget_4.addItem(i)
+                    if i in Dimension:
+                        if i not in dimension_list:
+                            self.listWidget.addItem(i)
+                    else:
+                        if i not in measurement_list:
+                            self.listWidget_4.addItem(i)
    
-        self.listWidget_3.clear()        
+        self.listWidget_3.clear()    
 
 
 
