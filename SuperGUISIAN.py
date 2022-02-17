@@ -564,6 +564,14 @@ class Ui_MainWindow(object):
         self.Plot_Pie_Button = QtWidgets.QPushButton(self.tab_3)
         self.Plot_Pie_Button.setGeometry(QtCore.QRect(570, 80, 75, 23))
         self.Plot_Pie_Button.setObjectName("Plot_Pie_Button")
+        ########clear Button###########
+        self.Clear_Column = QtWidgets.QPushButton(self.tab_3)
+        self.Clear_Column.setGeometry(QtCore.QRect(470, 20, 75, 23))
+        self.Clear_Column.setObjectName("Clear_Column")
+        self.Clear_Row = QtWidgets.QPushButton(self.tab_3)
+        self.Clear_Row.setGeometry(QtCore.QRect(470, 70, 75, 23))
+        self.Clear_Row.setObjectName("Clear_Row")
+        ######################################
         self.tabWidget.addTab(self.tab_3, "")
         self.listWidget = HeadList(self,self.centralwidget)
         self.listWidget.setGeometry(QtCore.QRect(50, 90, 261, 241))
@@ -615,12 +623,14 @@ class Ui_MainWindow(object):
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_2.setDefaultDropAction(QtCore.Qt.MoveAction)    
         self.listWidget_2.doubleClicked.connect(self.filterup)
+        self.listWidget_2.clicked.connect(self.drill_down_up)
 
         self.listWidget_3.setAcceptDrops(True)
         self.listWidget_3.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_3.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.listWidget_3.doubleClicked.connect(self.filterdown)
-      
+        self.listWidget_3.clicked.connect(self.drill_down_down)
+
         self.listWidget_4.setAcceptDrops(True)
         self.listWidget_4.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction)    
@@ -632,10 +642,13 @@ class Ui_MainWindow(object):
         self.Save_Button.clicked.connect(self.save_head)
         self.Update_Button.clicked.connect(self.update_head)
         self.Union_Button_2.clicked.connect(self.getFile_union)
-
+        self.Plot_Pie_Button.clicked.connect(self.plot_pie)
+        self.Clear_Column.clicked.connect(self.clear_col)
+        self.Clear_Row.clicked.connect(self.clear_row)
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        
 
 
 
@@ -658,6 +671,8 @@ class Ui_MainWindow(object):
         self.Plot_Bar_Button.setText(_translate("MainWindow", "Bar Plot"))
         self.Plot_line_Button.setText(_translate("MainWindow", "Line Plot"))
         self.Plot_Pie_Button.setText(_translate("MainWindow", "Pie Plot"))
+        self.Clear_Column.setText(_translate("MainWindow", "Clear"))
+        self.Clear_Row.setText(_translate("MainWindow", "Clear"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Graph"))
         self.label.setText(_translate("MainWindow", "LIST HEADER"))
         self.pushButton.setText(_translate("MainWindow", "Import File"))
@@ -738,7 +753,72 @@ class Ui_MainWindow(object):
                 else:
                     string.append(str(x))
                     self.all_data[x] = self.all_data[x].astype(str) 
+
+    def split_date(self):
+        Date_list = []
+        split_list = []
+        for i in Dimension:
+            if "Date" in i:
+                Date_list.append(i)
+        for j in Date_list:
+            split_list.append("split"+str(j))
+        for x in range(len(Date_list)):
+            split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
+            ##### split %Y %M %D
+            self.all_data[str(Date_list[x])+" Day"] = split_list[x][2]
+            self.all_data[str(Date_list[x])+" Month"] = split_list[x][1]
+            self.all_data[str(Date_list[x])+" Year"] = split_list[x][0]
+            #### str to int
+            self.all_data[str(Date_list[x])+" Day"].astype(int)
+            self.all_data[str(Date_list[x])+" Month"].astype(int)
+            self.all_data[str(Date_list[x])+" Year"].astype(int)
+
+    def drill_down_up(self):
+        head_columns = []
+        for i in self.all_data.columns:
+            head_columns.append(i)
+        item4 = self.listWidget_2.currentItem().text()
+        print(head_columns)
+        if "Date" in item4:
+            if "Day" in item4:
+                self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-4]+" Month")]) 
+            elif "Month" in item4:
+                self.listWidget_2.addItem(head_columns[head_columns.index(item4[:-6]+" Year")])     
+            elif "Year" in item4:
+                pass
+            else:    
+                self.listWidget_2.addItem(head_columns[head_columns.index(item4+" Day")])
+        elif item4 == head_columns[-1]:
+            pass            
+        else:
+            if "Day" in head_columns[head_columns.index(item4)+1]:
+                pass
+            else:
+                self.listWidget_2.addItem(head_columns[head_columns.index(item4)+1]) 
         
+    def drill_down_down(self):
+        head_columns = []
+        for i in self.all_data.columns:
+            head_columns.append(i)
+        item4 = self.listWidget_3.currentItem().text()
+        print(head_columns)
+        if "Date" in item4:
+            if "Day" in item4:
+                self.listWidget_3.addItem(head_columns[head_columns.index(item4[-4]+" Month")]) 
+            elif "Month" in item4:
+                self.listWidget_3.addItem(head_columns[head_columns.index(item4[-6]+" Year")])     
+            elif "Year" in item4:
+                pass
+            else:    
+                self.listWidget_3.addItem(head_columns[head_columns.index(item4+" Day")])
+        elif item4 == head_columns[-1]:
+            pass            
+        else:
+            if "Day" in head_columns[head_columns.index(item4)+1]:
+                pass
+            else:
+                self.listWidget_3.addItem(head_columns[head_columns.index(item4)+1]) 
+
     def update_head(self):
         if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
             return print("ERROR")   
@@ -812,8 +892,10 @@ class Ui_MainWindow(object):
     
     def showdata_table(self):  
         self.tableWidget.clear()
+        self.split_date()
         numcolumn = len(self.all_data)
         print(len(self.all_data))
+        
         if numcolumn == 0:
             numRows = len(self.all_data.index)
         else:
@@ -824,7 +906,7 @@ class Ui_MainWindow(object):
         for i in range(numRows):
             for j in range(len(self.all_data.columns)):
                 self.tableWidget.setItem(i, j, QTableWidgetItem(str(self.all_data.iat[i,j])))   
-                
+                    
     def readData(self):
         self.all_data = pd.read_csv(self.filename,encoding = 'windows-1252').dropna()
         global namefile
@@ -878,13 +960,18 @@ class Ui_MainWindow(object):
         filter_key[item] = data
 
 
+
+
     def data_plot(self,fig):        
         global chart
         row_index = []
         col_index = [] 
         encode_list = []
+        encode_PieList = []
+        encode_ColorList = []
         tooltip_list = []
         data= []
+        
         
         for r in range(len(self.listWidget_3)):            
             if "(" in self.listWidget_3.item(r).text() :
@@ -905,31 +992,35 @@ class Ui_MainWindow(object):
             if col_index[0] in Dimension:
                 encode_list.append(alt.X(col_index[0]))
                 tooltip_list.append(col_index[0])
+                encode_PieList.append(alt.Theta(col_index[0]))
+                encode_ColorList.append(alt.Color(col_index[0]))
 
             elif col_index[0] in Measurement:
                 if col_index[0] not in op:
                     op[col_index[0]] = "sum"
                 encode_list.append(alt.X(f"{op[col_index[0]]}({col_index[0]})")) 
                 tooltip_list.append(f"{op[col_index[0]]}({col_index[0]})")     
-        
+                encode_PieList.append(alt.Theta(f"{op[col_index[0]]}({col_index[0]})"))
+                encode_ColorList.append(alt.Color(f"{op[col_index[0]]}({col_index[0]})"))
         if len(col_index) >= 2 :
             if col_index[1] in Dimension:
                 encode_list.append(alt.Column(col_index[1]))
                 tooltip_list.append(col_index[1])
+                
 
-            elif col_index[1] in Measurement:
-                if col_index[0] in  Measurement:
-                    if col_index[1] not in op:
-                        op[col_index[1]] = "sum"
-                    encode_list.append(alt.X2(f"{op[col_index[1]]}({col_index[1]})"))
-                    tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")
+            # elif col_index[1] in Measurement:
+            #     if col_index[0] in  Measurement:
+            #         if col_index[1] not in op:
+            #             op[col_index[1]] = "sum"
+            #         encode_list.append(alt.X2(f"{op[col_index[1]]}({col_index[1]})"))
+            #         tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")
                     
                                           
-                else:  
-                    if col_index[1] not in op:
-                        op[col_index[1]] = "sum"
-                    encode_list.append(alt.Column(f"{op[col_index[1]]}({col_index[1]})"))
-                    tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")    
+            else:  
+                if col_index[1] not in op:
+                    op[col_index[1]] = "sum"
+                encode_list.append(alt.Column(f"{op[col_index[1]]}({col_index[1]})"))
+                tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")    
             
         
         if len(row_index) >= 1 :
@@ -999,24 +1090,253 @@ class Ui_MainWindow(object):
                             filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
             print("OPC",op_C)                   
             print(filter_str)
-            if filter_str != "":
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                )    
-            else:       
-                alt.data_transformers.disable_max_rows()
-                chart = (alt.Chart(self.all_data[data])
-                .mark_bar()
-                .encode(*encode_list, tooltip =tooltip_list)
-                .resolve_scale(x="independent",y="independent")
-                .properties(title="bar chart")
-                .configure_title(anchor="start")
-                    ) 
+
+            count_Row = 0
+            count_Column = 0
+            Alt_Axis_list = []
+            col_Measure = []
+            row_Measure = []
+            chart_list = []
+            
+            #count col
+            for col in col_index:
+                if col in Measurement:
+                    count_Column +=1
+                    col_Measure.append(col)
+            #count row
+            for row in row_index:
+                if row in Measurement:
+                    count_Row += 1
+                    row_Measure.append(row)
+            # append data
+            
+            if count_Column >= 1:
+                for count_col in range(count_Column) :
+                    Alt_Axis_list.append(col_Measure[count_col])
+
+            elif count_Row >= 1:
+                for count_R in range(count_Row) :
+                    Alt_Axis_list.append(row_Measure[count_R])            
+            
+            print(type(Alt_Axis_list))
+            print(Alt_Axis_list)
+            print(row_index)
+
+            #meassure 2 or more
+            if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
+
+
+            # 1 row Dimension Many Col Measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0
+
+
+                        
+                # 1 Col Dimension Many Row Measurement
+                #      
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                
+
+
+                #2 row Dimension Many Col Measurement
+
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+                #2 col Dimension Many Row Measurement    
+                        
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                      
+                
+                #3 Row Dimension 1 Measurement 
+
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+
+                #3 Col Dimension 1 Measurement 
+
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_bar()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="bar chart")
+                            # .configure_title(anchor="start")
+                            )
+
+
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0     
+
+            
+            
+            else:
+
+                if filter_str != "":
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                    )    
+                else:       
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data[data])
+                    .mark_bar()
+                    .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
+                    .properties(title="bar chart")
+                    .configure_title(anchor="start")
+                    )
+
+
+
+        ###LINE CHART            
         elif  fig == "line":     
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
@@ -1034,24 +1354,433 @@ class Ui_MainWindow(object):
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
                             filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
                                                     
-                if filter_str != "" :
+            count_Row = 0
+            count_Column = 0
+            Alt_Axis_list = []
+            col_Measure = []
+            row_Measure = []
+            chart_list = []
+            
+            #count col
+            for col in col_index:
+                if col in Measurement:
+                    count_Column +=1
+                    col_Measure.append(col)
+            #count row
+            for row in row_index:
+                if row in Measurement:
+                    count_Row += 1
+                    row_Measure.append(row)
+            # append data
+            
+            if count_Column >= 1:
+                for count_col in range(count_Column) :
+                    Alt_Axis_list.append(col_Measure[count_col])
+
+            elif count_Row >= 1:
+                for count_R in range(count_Row) :
+                    Alt_Axis_list.append(row_Measure[count_R])            
+            
+            print(type(Alt_Axis_list))
+            print(Alt_Axis_list)
+            print(row_index)
+
+            #meassure 2 or more
+            if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
+            # 1 row Dimension Many Col Measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0
+
+
+                        
+                # 1 Col Dimension Many Row Measurement
+                #      
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                
+
+
+                #2 row Dimension Many Col Measurement
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+                #2 col Dimension Many Row Measurement    
+                        
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0                      
+                
+                #3 Row Dimension 1 Measurement 
+
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0  
+
+                #3 Col Dimension 1 Measurement 
+
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)):
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")  
+                            )  
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_line()
+                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent",y="independent")
+                            .properties(title="line chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0     
+            
+            
+            else:
+
+                if filter_str != "":
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
-                    .mark_line(point=True)
+                    .mark_line()
                     .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
                     .properties(title="line chart")
                     .configure_title(anchor="start")
                     )    
                 else:       
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data[data])
-                    .mark_line(point=True)
+                    .mark_line()
                     .encode(*encode_list, tooltip =tooltip_list)
+                    .resolve_scale(x="independent",y="independent")
                     .properties(title="line chart")
                     .configure_title(anchor="start")
-                    ) 
+                    )
+
+        elif  fig == "pie":     
+            filter_str = ""
+            if len(row_index) > 0 or len(col_index) > 0:
+                s = row_index + col_index 
+                for x in range(len(s)):                    
+                    if s[x] not in filter_key:   
+                        pass
+                    else:    
+                        for i in filter_key[s[x]]:
+                            filter_str += s[x] +' != "'+i+'"' +" and "
+                for z in range(len(s)):
+                    if s[z] not in op_C:   
+                        pass
+                    else:    
+                        if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
+                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+
+            count_Row = 0
+            count_Column = 0
+            Alt_Axis_list = []
+            col_Measure = []
+            row_Measure = []
+            chart_list = []
+            
+            #count col
+            for col in col_index:
+                if col in Measurement:
+                    count_Column +=1
+                    col_Measure.append(col)
+            #count row
+            for row in row_index:
+                if row in Measurement:
+                    count_Row += 1
+                    row_Measure.append(row)
+            # append data
+            
+            if count_Column >= 1:
+                for count_col in range(count_Column) :
+                    Alt_Axis_list.append(col_Measure[count_col]) #get head Item measurement
+
+            elif count_Row >= 1:
+                for count_R in range(count_Row) :
+                    Alt_Axis_list.append(row_Measure[count_R])            
+            
+            print(type(Alt_Axis_list))
+            print(Alt_Axis_list)
+            print(row_index)
+
+            if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
+            # 1 row Dimension Many Col Measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)): 
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_arc()
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")  
+                            )
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_arc()
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0
                 
-   
+            # 1 Col Dimension Many Row Measurement
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)): 
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_arc()
+                            # .encode(theta= alt.Theta(field=col_index[0],type='quantitative'),color= alt.Color(field =Alt_Axis_list[i],type='nominal'), tooltip =tooltip_list)
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")  
+                            )
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_arc()
+                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.vconcat(*chart_list) # 0
+
+            # 2 row Dimension Many Col Measurement                  
+
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)): 
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_arc()
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")  
+                            )
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_arc()
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart") 
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Column == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.hconcat(*chart_list) # 0
+
+            # 2 Col Dimension Many Row Measurement
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    for j in range(len(Alt_Axis_list)): 
+                        chart_list.append(f"chart{j}") # for chart_list have array
+                    for i in range(len(Alt_Axis_list)):
+                        if filter_str == "":
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            .mark_arc()
+                            # .encode(theta= alt.Theta(field=col_index[0],type='quantitative'),color= alt.Color(field =Alt_Axis_list[i],type='nominal'), tooltip =tooltip_list)
+                            .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column=alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")  
+                            )
+                            
+                        else:
+                            alt.data_transformers.disable_max_rows()
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            .mark_arc()
+                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column=alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(theta="independent",color="independent")
+                            .properties(title="Pie chart")
+                            # .configure_title(anchor="start")
+                            )
+                    if count_Row == 1:
+                        chart = chart_list[0]
+                    else:
+                        chart = alt.vconcat(*chart_list) # 0
+                
+
+
+
+            else:
+
+                if filter_str != "":
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                    .mark_arc()
+                    .encode(*encode_PieList ,*encode_ColorList, tooltip =tooltip_list)
+                    # .resolve_scale(x="independent",y="independent")
+                    .properties(title="Pie chart")
+                    .configure_title(anchor="start")
+                    )    
+                else:       
+                    alt.data_transformers.disable_max_rows()
+                    chart = (alt.Chart(self.all_data[data])
+                    .mark_arc()
+                    .encode(*encode_PieList,*encode_ColorList , tooltip =tooltip_list)
+                    # .resolve_scale(x="independent",y="independent")
+                    .properties(title="Pie chart")
+                    .configure_title(anchor="start")
+                    )
     def plot_bar(self): 
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")   
@@ -1073,6 +1802,17 @@ class Ui_MainWindow(object):
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
         self.gridtable()
+
+    def plot_pie(self):
+        if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
+            return print("ERROR")
+        pie ="pie"
+        self.data_plot(pie)            
+        self.verticalLayout.removeWidget(self.view)
+        self.view =WebEngineView()
+        self.view.updateChart(chart)
+        self.verticalLayout.addWidget(self.view)
+        self.gridtable()        
         
     def gridtable(self):
         col_index = []
@@ -1179,7 +1919,51 @@ class Ui_MainWindow(object):
                 self.Filter_Window.show()
 
 
+    def clear_col(self):
+        temp = []
+        dimension_list = []
+        measurement_list = []
+        for j in range(len(self.listWidget_2)):
+            temp.append(self.listWidget_2.item(j).text())
+            
+        for x in range(len(self.listWidget)):
+            dimension_list.append(self.listWidget.item(x).text())
+        for z in range(len(self.listWidget_4)):
+            measurement_list.append(self.listWidget_4.item(z).text())
 
+        for i in temp:
+            if i not in dimension_list or i not in measurement_list :
+                if i in Dimension:
+                     if i not in dimension_list:
+                        self.listWidget.addItem(i)
+                else:
+                     if i not in measurement_list:
+                        self.listWidget_4.addItem(i)
+   
+        self.listWidget_2.clear()
+      
+    def clear_row(self):       
+        temp = []
+        dimension_list = []
+        measurement_list = []
+        for j in range(len(self.listWidget_3)):
+            temp.append(self.listWidget_3.item(j).text())
+            
+        for x in range(len(self.listWidget)):
+            dimension_list.append(self.listWidget.item(x).text())
+        for z in range(len(self.listWidget_4)):
+            measurement_list.append(self.listWidget_4.item(z).text())
+
+        for i in temp:
+            if i not in dimension_list or i not in measurement_list :
+                if i in Dimension:
+                     if i not in dimension_list:
+                        self.listWidget.addItem(i)
+                else:
+                     if i not in measurement_list:
+                        self.listWidget_4.addItem(i)
+   
+        self.listWidget_3.clear()        
 
 
 
