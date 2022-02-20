@@ -16,6 +16,16 @@ class Test(unittest.TestCase):
         self.assertIsInstance(self.manager.split_date(Dimension,all_data),
         pandas.core.frame.DataFrame)
 
+    def test_get_backup(self):
+        file = 'data_head.json'
+        self.assertIsInstance(self.manager.get_backup(file),dict)
+
+    # def test_backup_head(self):
+    #     file = 'data_head.json'
+    #     self.assertIsInstance(self.manager.backup_head(file),dict)
+
+    
+
 
 if __name__ == "__main__":
     unittest.main()

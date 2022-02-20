@@ -1,5 +1,6 @@
 import  pandas as pd
-
+import os
+import json
 
 class Manager():
     def readData(self,file):
@@ -36,3 +37,18 @@ class Manager():
             all_data[str(Date_list[x])+" Year"].astype(int)  
         
         return all_data
+
+    def get_backup(self,file):
+        if os.path.exists(file) == False:
+            self.backup_head()        
+        with open(file,'r') as head_file:
+            self.data_head = json.load(head_file)
+        return self.data_head
+
+
+    def backup_head(self,file):
+        with open(file, 'w') as head_file:
+            json.dump(self.data_head, head_file)
+          
+        return self.data_head
+
