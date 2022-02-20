@@ -20,9 +20,7 @@ class Test(unittest.TestCase):
         file = 'data_head.json'
         self.assertIsInstance(self.manager.get_backup(file),dict)
 
-    # def test_backup_head(self):
-    #     file = 'data_head.json'
-    #     self.assertIsInstance(self.manager.backup_head(file),dict)
+
 
     
 
