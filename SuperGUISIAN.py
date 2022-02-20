@@ -1022,22 +1022,34 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.ContextMenu and
             source is self.listWidget_3):
+            self.index = source.currentIndex().row()
             self.menu = QtWidgets.QMenu()
             
             self.action = QtWidgets.QAction("Drill Down")
+            self.action2 = QtWidgets.QAction("Delete")
+            
             self.menu.addAction(self.action)
+            self.menu.addAction(self.action2)
+
             self.action.triggered.connect(self.drill_down_down)
+            self.action2.triggered.connect(lambda:self.listWidget_3.takeItem(self.index))
             if self.menu.exec_(event.globalPos()):
                 item = source.itemAt(event.pos())
                 # print(item.text())
             return True
         if (event.type() == QtCore.QEvent.ContextMenu and
             source is self.listWidget_2):
+            self.index = source.currentIndex().row()
             self.menu = QtWidgets.QMenu()
             
             self.action = QtWidgets.QAction("Drill Down")
+            self.action2 = QtWidgets.QAction("Delete")
+
             self.menu.addAction(self.action)
+            self.menu.addAction(self.action2)
+
             self.action.triggered.connect(self.drill_down_up)
+            self.action2.triggered.connect(lambda:self.listWidget_2.takeItem(self.index))
             if self.menu.exec_(event.globalPos()):
                 item = source.itemAt(event.pos())
                 # print(item.text())
