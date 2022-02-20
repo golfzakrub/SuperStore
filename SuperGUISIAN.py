@@ -102,8 +102,17 @@ class Ui_Filter_Window(object):
         self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
         self.label.setObjectName("label")
         self.Apply = QtWidgets.QPushButton(self.centralwidget)
-        self.Apply.setGeometry(QtCore.QRect(250, 20, 75, 23))
+        self.Apply.setGeometry(QtCore.QRect(300, 20, 75, 23))
         self.Apply.setObjectName("Apply")
+
+        self.Remove_all = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_all.setGeometry(QtCore.QRect(200, 20, 75, 23))
+        self.Remove_all.setObjectName("Remove_all")
+
+        self.Select_all = QtWidgets.QPushButton(self.centralwidget)
+        self.Select_all.setGeometry(QtCore.QRect(100, 20, 75, 23))
+        self.Select_all.setObjectName("Select_all")
+
         Filter_Window.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Filter_Window)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 412, 21))
@@ -119,6 +128,8 @@ class Ui_Filter_Window(object):
 
         
         self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Remove_all.clicked.connect(self.clear_all)
+        self.Select_all.clicked.connect(self.select_all)
         self.retranslateUi(Filter_Window)
         QtCore.QMetaObject.connectSlotsByName(Filter_Window)
 
@@ -127,6 +138,8 @@ class Ui_Filter_Window(object):
         Filter_Window.setWindowTitle(_translate("Filter_Window", "MainWindow"))
         self.label.setText(_translate("Filter_Window", "LIST HEADER"))
         self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Remove_all.setText(_translate("Filter_Window", "Remove All"))
+        self.Select_all.setText(_translate("Filter_Window", "Select All"))
 
     def filterdata(self,listWidget,all_data):
         all_data = all_data
@@ -150,8 +163,13 @@ class Ui_Filter_Window(object):
         Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)
         
         
-       
-        
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))      
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)         
 ######################
         
                 
@@ -737,8 +755,6 @@ class Ui_Value(object):
     ###############################################################
 
 
-        
-
 class Ui_MainWindow(QtWidgets.QMainWindow,object):
     
 
@@ -768,10 +784,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.tableWidget_2 = QtWidgets.QTableWidget(self.tab)
-        self.tableWidget_2.setGeometry(QtCore.QRect(0, 0, 671, 601))
+        self.tableWidget_2.setGeometry(QtCore.QRect(0, 40, 671, 601))
         self.tableWidget_2.setObjectName("tableWidget_2")
         self.tableWidget_2.setColumnCount(0)
-        self.tableWidget_2.setRowCount(0)   
+        self.tableWidget_2.setRowCount(0)
+        self.Grid_table_button = QtWidgets.QPushButton(self.tab)
+        self.Grid_table_button.setGeometry(QtCore.QRect(300, 10, 75, 23))
+        self.Grid_table_button.setObjectName("Grid_table_button")   
         self.tabWidget.addTab(self.tab, "")     
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
@@ -880,7 +899,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction) 
 
 
-        
+        self.Grid_table_button.clicked.connect(self.gridtable)
         self.pushButton.clicked.connect(self.getFile)
         self.Plot_Bar_Button.clicked.connect(self.plot_bar)
         self.Plot_line_Button.clicked.connect(self.plot_line)
@@ -911,6 +930,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sianbleau"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DataFrame), _translate("MainWindow", "Data"))
+        self.Grid_table_button.setText(_translate("MainWindow", "Grid Table"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Table"))
         self.label_2.setText(_translate("MainWindow", "Column"))
         self.label_3.setText(_translate("MainWindow", "Row"))
@@ -1009,7 +1029,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         for j in Date_list:
             split_list.append("split"+str(j))
         for x in range(len(Date_list)):
-            split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
+            if "-" in self.all_data[Date_list[x]][0]:
+                split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
+            if "/" in self.all_data[Date_list[x]][0]:
+                split_list[x] = self.all_data[Date_list[x]].str.split("/",expand=True)
             ##### split %Y %M %D
             self.all_data[str(Date_list[x])+" Day"] = split_list[x][0]
             self.all_data[str(Date_list[x])+" Month"] = split_list[x][1]
@@ -1450,6 +1473,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             print(row_index)
 
             #meassure 2 or more
+
             if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
 
 
@@ -1733,18 +1757,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for j in range(len(Alt_Axis_list)):
                         chart_list.append(f"chart{j}") # for chart_list have array
                     for i in range(len(Alt_Axis_list)):
-                        # min_value = min()
-                        # max_value = max()
+
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
 
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0]),
                             tooltip =tooltip_list)
                             
-                            .resolve_scale(y="independent")
+                            .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1757,7 +1780,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             y= alt.Y(row_index[0]),
                             tooltip =tooltip_list)
                             
-                            .resolve_scale(y="independent")
+                            .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1813,6 +1836,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
                             tooltip =tooltip_list)
                             .resolve_scale(y="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1825,6 +1849,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
                             tooltip =tooltip_list)
                             .resolve_scale(y="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1845,6 +1870,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1855,6 +1881,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1995,7 +2022,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             print(Alt_Axis_list)
             print(row_index)
 
+ 
+
             if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
+                print("if >1")
             # 1 row Dimension Many Col Measurement
                 if len(row_index) == 1 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)): 
@@ -2117,9 +2147,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 
 
 
-
             else:
-
+                print("else")
                 if filter_str != "":
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
@@ -2138,6 +2167,132 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     .properties(title="Pie chart")
                     # .configure_title(anchor="start")
                     )
+
+            if ((count_Column ==1 and len(row_index) !=0)  or (count_Row ==1 and len(col_index) !=0)):
+                print("if ==1")
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )   
+
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )   
+
+
+
+                
     def plot_bar(self): 
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")   
@@ -2147,7 +2302,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()
+        # self.gridtable()
         
     def plot_line(self):
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
@@ -2158,7 +2313,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()
+        # self.gridtable()
 
     def plot_pie(self):
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
@@ -2169,7 +2324,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()        
+        # self.gridtable()        
         
     def gridtable(self):
         col_index = []
