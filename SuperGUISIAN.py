@@ -2,13 +2,13 @@
 
 from distutils.log import error
 from tracemalloc import start
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets 
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
-from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetItem,QFileDialog,QWidget
+from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetItem,QFileDialog,QWidget,QMenu
 import  pandas as pd
 from io import StringIO
 import altair as alt
-from PyQt5.QtCore import QDataStream, Qt
+from PyQt5.QtCore import QDataStream, Qt ,QEvent
 import json
 import os.path
 
@@ -102,8 +102,17 @@ class Ui_Filter_Window(object):
         self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
         self.label.setObjectName("label")
         self.Apply = QtWidgets.QPushButton(self.centralwidget)
-        self.Apply.setGeometry(QtCore.QRect(250, 20, 75, 23))
+        self.Apply.setGeometry(QtCore.QRect(300, 20, 75, 23))
         self.Apply.setObjectName("Apply")
+
+        self.Remove_all = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_all.setGeometry(QtCore.QRect(200, 20, 75, 23))
+        self.Remove_all.setObjectName("Remove_all")
+
+        self.Select_all = QtWidgets.QPushButton(self.centralwidget)
+        self.Select_all.setGeometry(QtCore.QRect(100, 20, 75, 23))
+        self.Select_all.setObjectName("Select_all")
+
         Filter_Window.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(Filter_Window)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 412, 21))
@@ -119,6 +128,8 @@ class Ui_Filter_Window(object):
 
         
         self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Remove_all.clicked.connect(self.clear_all)
+        self.Select_all.clicked.connect(self.select_all)
         self.retranslateUi(Filter_Window)
         QtCore.QMetaObject.connectSlotsByName(Filter_Window)
 
@@ -127,6 +138,8 @@ class Ui_Filter_Window(object):
         Filter_Window.setWindowTitle(_translate("Filter_Window", "MainWindow"))
         self.label.setText(_translate("Filter_Window", "LIST HEADER"))
         self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Remove_all.setText(_translate("Filter_Window", "Remove All"))
+        self.Select_all.setText(_translate("Filter_Window", "Select All"))
 
     def filterdata(self,listWidget,all_data):
         all_data = all_data
@@ -150,15 +163,263 @@ class Ui_Filter_Window(object):
         Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)
         
         
-       
-        
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))      
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)         
 ######################
         
                 
 
+## y/m/d       
+class Ui_Filter_date_Window(object):
+    def setupUi(self,item_head,Filter_Window,listWidget,all_data):
+        Filter_Window.setObjectName("Filter_Window")
+        Filter_Window.resize(589, 575)
+        self.centralwidget = QtWidgets.QWidget(Filter_Window)
+        self.centralwidget.setObjectName("centralwidget")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 391, 481))
+        self.listWidget.setObjectName("listWidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
+        self.label.setObjectName("label")
+        self.Apply = QtWidgets.QPushButton(self.centralwidget)
+        self.Apply.setGeometry(QtCore.QRect(460, 360, 75, 23))
+        self.Apply.setObjectName("Apply")
+        self.Add_ALL_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_2.setGeometry(QtCore.QRect(430, 80, 75, 23))
+        self.Add_ALL_2.setObjectName("Add_ALL_2")
+        self.Remove_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_ALL_3.setGeometry(QtCore.QRect(430, 120, 75, 23))
+        self.Remove_ALL_3.setObjectName("Remove_ALL_3")
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(450, 220, 51, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.setItemText(0, "")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(510, 220, 61, 31))
+        self.textEdit.setObjectName("textEdit")
+        self.Add_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_3.setGeometry(QtCore.QRect(460, 290, 75, 23))
+        self.Add_ALL_3.setObjectName("Add_ALL_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(410, 230, 41, 21))
+        self.label_4.setObjectName("label_4")
+        Filter_Window.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(Filter_Window)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 21))
+        self.menubar.setObjectName("menubar")
+        Filter_Window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(Filter_Window)
+        self.statusbar.setObjectName("statusbar")
+        Filter_Window.setStatusBar(self.statusbar)
+
+        self.filterdata(listWidget,all_data)
+        
         
 
+        self.Add_ALL_3.clicked.connect(self.filter_date)
+        self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Add_ALL_2.clicked.connect(self.select_all)
+        self.Remove_ALL_3.clicked.connect(self.clear_all)
+        
 
+        self.retranslateUi(Filter_Window)
+        QtCore.QMetaObject.connectSlotsByName(Filter_Window)
+
+    def retranslateUi(self, Filter_Window):
+        _translate = QtCore.QCoreApplication.translate
+        Filter_Window.setWindowTitle(_translate("Filter_Window", "Date Filter"))
+        self.label.setText(_translate("Filter_Window", "LIST HEADER"))
+        self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Add_ALL_2.setText(_translate("Filter_Window", "Add ALL"))
+        self.Remove_ALL_3.setText(_translate("Filter_Window", "Remove ALL"))
+        self.comboBox.setItemText(1, _translate("Filter_Window", ">"))
+        self.comboBox.setItemText(2, _translate("Filter_Window", "<"))
+        self.comboBox.setItemText(3, _translate("Filter_Window", "="))
+        self.Add_ALL_3.setText(_translate("Filter_Window", "OK"))
+        self.label_4.setText(_translate("Filter_Window", "Range"))       
+        
+    def filterdata(self,listWidget,all_data):
+        all_data = all_data
+        
+        item2 = listWidget.currentItem().text()
+        for i in all_data[item2].unique():
+            self.item = QtWidgets.QListWidgetItem(i)
+            self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            self.item.setCheckState(QtCore.Qt.Checked)
+            self.listWidget.addItem(self.item)       
+
+    def filter_date(self):
+        op = {">":(lambda x,y:x>y),"<":(lambda x,y:x<y),"=":(lambda x,y:x==y)}        
+        if self.textEdit.toPlainText() == "" or  self.comboBox.currentText() == "":
+            return
+        for i in range(self.listWidget.count()):
+            x = self.listWidget.item(i).text()
+            y = self.textEdit.toPlainText()
+            if  op[self.comboBox.currentText()](x,y):
+                self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+                
+    
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)                         
+
+    def filterComplete(self,item_head):
+        self.getCheckItem = []
+        self.getCheckItem.clear()
+        self.item = item_head
+        for i in range(self.listWidget.count()):
+            if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
+                self.getCheckItem.append(self.listWidget.item(i).text())
+
+        Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)   
+
+#all date
+class Ui_Filter_Date_Window(object):
+    def setupUi(self,item_head,Filter_Window,listWidget,all_data):
+        Filter_Window.setObjectName("Filter_Window")
+        Filter_Window.resize(589, 575)
+        self.centralwidget = QtWidgets.QWidget(Filter_Window)
+        self.centralwidget.setObjectName("centralwidget")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 391, 481))
+        self.listWidget.setObjectName("listWidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
+        self.label.setObjectName("label")
+        self.Apply = QtWidgets.QPushButton(self.centralwidget)
+        self.Apply.setGeometry(QtCore.QRect(460, 360, 75, 23))
+        self.Apply.setObjectName("Apply")
+        self.Add_ALL_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_2.setGeometry(QtCore.QRect(430, 80, 75, 23))
+        self.Add_ALL_2.setObjectName("Add_ALL_2")
+        self.Remove_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_ALL_3.setGeometry(QtCore.QRect(430, 120, 75, 23))
+        self.Remove_ALL_3.setObjectName("Remove_ALL_3")
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(450, 220, 51, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.setItemText(0, "")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox2 = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox2.setGeometry(QtCore.QRect(450, 260, 51, 31))
+        self.comboBox2.setObjectName("comboBox")
+        self.comboBox2.addItem("")
+        self.comboBox2.setItemText(0, "")
+        self.comboBox2.addItem("")
+        self.comboBox2.addItem("")
+        self.comboBox2.addItem("")
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(510, 220, 61, 31))
+        self.textEdit.setObjectName("textEdit")
+        self.Add_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_3.setGeometry(QtCore.QRect(460, 290, 75, 23))
+        self.Add_ALL_3.setObjectName("Add_ALL_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(410, 230, 41, 21))
+        self.label_4.setObjectName("label_4")
+        Filter_Window.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(Filter_Window)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 21))
+        self.menubar.setObjectName("menubar")
+        Filter_Window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(Filter_Window)
+        self.statusbar.setObjectName("statusbar")
+        Filter_Window.setStatusBar(self.statusbar)
+
+        self.filterdata(listWidget,all_data)
+        
+        
+
+        self.Add_ALL_3.clicked.connect(self.filter_date)
+        self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Add_ALL_2.clicked.connect(self.select_all)
+        self.Remove_ALL_3.clicked.connect(self.clear_all)
+        
+
+        self.retranslateUi(Filter_Window)
+        QtCore.QMetaObject.connectSlotsByName(Filter_Window)
+
+    def retranslateUi(self, Filter_Window):
+        _translate = QtCore.QCoreApplication.translate
+        Filter_Window.setWindowTitle(_translate("Filter_Window", "Date Filter"))
+        self.label.setText(_translate("Filter_Window", "LIST HEADER"))
+        self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Add_ALL_2.setText(_translate("Filter_Window", "Add ALL"))
+        self.Remove_ALL_3.setText(_translate("Filter_Window", "Remove ALL"))
+        self.comboBox.setItemText(1, _translate("Filter_Window", ">"))
+        self.comboBox.setItemText(2, _translate("Filter_Window", "<"))
+        self.comboBox.setItemText(3, _translate("Filter_Window", "="))
+        self.comboBox2.setItemText(1, _translate("Filter_Window", "Day"))
+        self.comboBox2.setItemText(2, _translate("Filter_Window", "Month"))
+        self.comboBox2.setItemText(3, _translate("Filter_Window", "Year"))
+        self.Add_ALL_3.setText(_translate("Filter_Window", "OK"))
+        self.label_4.setText(_translate("Filter_Window", "Range"))       
+        
+    def filterdata(self,listWidget,all_data):
+        all_data = all_data
+        
+        item2 = listWidget.currentItem().text()
+        for i in all_data[item2].unique():
+            self.item = QtWidgets.QListWidgetItem(i)
+            self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            self.item.setCheckState(QtCore.Qt.Checked)
+            self.listWidget.addItem(self.item)       
+
+    def filter_date(self):
+        op = {">":(lambda x,y:x>y),"<":(lambda x,y:x<y),"=":(lambda x,y:x==y)}        
+        if self.textEdit.toPlainText() == "" or  self.comboBox.currentText() == "":
+            return
+        for i in range(self.listWidget.count()):
+            if self.comboBox2.currentText() == "Day":
+                x = self.listWidget.item(i).text()[0:2] #19-15-42
+            if self.comboBox2.currentText() == "Month":
+                x = self.listWidget.item(i).text()[3:5]
+            if self.comboBox2.currentText() == "Year":
+                x = self.listWidget.item(i).text()[6:]
+            y = self.textEdit.toPlainText()
+            if  op[self.comboBox.currentText()](x,y):
+                self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+            
+                
+    
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)                         
+
+    def filterComplete(self,item_head):
+        self.getCheckItem = []
+        self.getCheckItem.clear()
+        self.item = item_head
+        for i in range(self.listWidget.count()):
+            if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
+                self.getCheckItem.append(self.listWidget.item(i).text())
+
+        Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)      
 
 class Ui_Value(object):
     def setupUi(self,item,Value):
@@ -494,10 +755,7 @@ class Ui_Value(object):
     ###############################################################
 
 
-        
-
-
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow,object):
     
 
     def setupUi(self, MainWindow):
@@ -526,10 +784,13 @@ class Ui_MainWindow(object):
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
         self.tableWidget_2 = QtWidgets.QTableWidget(self.tab)
-        self.tableWidget_2.setGeometry(QtCore.QRect(0, 0, 671, 601))
+        self.tableWidget_2.setGeometry(QtCore.QRect(0, 40, 671, 601))
         self.tableWidget_2.setObjectName("tableWidget_2")
         self.tableWidget_2.setColumnCount(0)
-        self.tableWidget_2.setRowCount(0)   
+        self.tableWidget_2.setRowCount(0)
+        self.Grid_table_button = QtWidgets.QPushButton(self.tab)
+        self.Grid_table_button.setGeometry(QtCore.QRect(300, 10, 75, 23))
+        self.Grid_table_button.setObjectName("Grid_table_button")   
         self.tabWidget.addTab(self.tab, "")     
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
@@ -623,18 +884,22 @@ class Ui_MainWindow(object):
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_2.setDefaultDropAction(QtCore.Qt.MoveAction)    
         self.listWidget_2.doubleClicked.connect(self.filterup)
-        self.listWidget_2.clicked.connect(self.drill_down_up)
+        # self.listWidget_2.clicked.connect(self.drill_down_up)
+        self.listWidget_2.installEventFilter(self)
 
         self.listWidget_3.setAcceptDrops(True)
         self.listWidget_3.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_3.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.listWidget_3.doubleClicked.connect(self.filterdown)
-        self.listWidget_3.clicked.connect(self.drill_down_down)
+        # self.listWidget_3.clicked.connect(self.drill_down_down)
+        self.listWidget_3.installEventFilter(self)
 
         self.listWidget_4.setAcceptDrops(True)
         self.listWidget_4.setDragEnabled(True) #DRAG AND DROP
-        self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction)    
-        
+        self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction) 
+
+
+        self.Grid_table_button.clicked.connect(self.gridtable)
         self.pushButton.clicked.connect(self.getFile)
         self.Plot_Bar_Button.clicked.connect(self.plot_bar)
         self.Plot_line_Button.clicked.connect(self.plot_line)
@@ -665,6 +930,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Sianbleau"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.DataFrame), _translate("MainWindow", "Data"))
+        self.Grid_table_button.setText(_translate("MainWindow", "Grid Table"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Table"))
         self.label_2.setText(_translate("MainWindow", "Column"))
         self.label_3.setText(_translate("MainWindow", "Row"))
@@ -763,15 +1029,57 @@ class Ui_MainWindow(object):
         for j in Date_list:
             split_list.append("split"+str(j))
         for x in range(len(Date_list)):
-            split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
+            if "-" in self.all_data[Date_list[x]][0]:
+                split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
+            if "/" in self.all_data[Date_list[x]][0]:
+                split_list[x] = self.all_data[Date_list[x]].str.split("/",expand=True)
             ##### split %Y %M %D
-            self.all_data[str(Date_list[x])+" Day"] = split_list[x][2]
+            self.all_data[str(Date_list[x])+" Day"] = split_list[x][0]
             self.all_data[str(Date_list[x])+" Month"] = split_list[x][1]
-            self.all_data[str(Date_list[x])+" Year"] = split_list[x][0]
+            self.all_data[str(Date_list[x])+" Year"] = split_list[x][2]
             #### str to int
             self.all_data[str(Date_list[x])+" Day"].astype(int)
             self.all_data[str(Date_list[x])+" Month"].astype(int)
             self.all_data[str(Date_list[x])+" Year"].astype(int)
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            source is self.listWidget_3):
+            self.index = source.currentIndex().row()
+            self.menu = QtWidgets.QMenu()
+            
+            self.action = QtWidgets.QAction("Drill Down")
+            self.action2 = QtWidgets.QAction("Delete")
+            
+            self.menu.addAction(self.action)
+            self.menu.addAction(self.action2)
+
+            self.action.triggered.connect(self.drill_down_down)
+            self.action2.triggered.connect(lambda:self.listWidget_3.takeItem(self.index))
+            if self.menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                # print(item.text())
+            return True
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            source is self.listWidget_2):
+            self.index = source.currentIndex().row()
+            self.menu = QtWidgets.QMenu()
+            
+            self.action = QtWidgets.QAction("Drill Down")
+            self.action2 = QtWidgets.QAction("Delete")
+
+            self.menu.addAction(self.action)
+            self.menu.addAction(self.action2)
+
+            self.action.triggered.connect(self.drill_down_up)
+            self.action2.triggered.connect(lambda:self.listWidget_2.takeItem(self.index))
+            if self.menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                # print(item.text())
+            return True
+        
+        return super().eventFilter(source, event)
+
 
     def drill_down_up(self):
         head_columns = []
@@ -1123,13 +1431,13 @@ class Ui_MainWindow(object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
             print("OPC",op_C)                   
             print(filter_str)
 
@@ -1165,6 +1473,7 @@ class Ui_MainWindow(object):
             print(row_index)
 
             #meassure 2 or more
+
             if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
 
 
@@ -1173,12 +1482,18 @@ class Ui_MainWindow(object):
                     for j in range(len(Alt_Axis_list)):
                         chart_list.append(f"chart{j}") # for chart_list have array
                     for i in range(len(Alt_Axis_list)):
+                        # min_value = min()
+                        # max_value = max()
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
+
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1187,8 +1502,11 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1230,7 +1548,7 @@ class Ui_MainWindow(object):
                         chart = alt.hconcat(*chart_list) # 0                
 
 
-                #2 row Dimension Many Col Measurement
+                #2 row Dimension Many Col Measurement Finish
 
                 if len(row_index) == 2 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1240,8 +1558,10 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1250,8 +1570,10 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1270,8 +1592,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1280,8 +1602,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1290,7 +1612,7 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0                      
                 
-                #3 Row Dimension 1 Measurement 
+                #3 Row Dimension 3 Col Measurement 
 
                 if len(row_index) == 3 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1300,8 +1622,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1310,8 +1632,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1321,7 +1643,7 @@ class Ui_MainWindow(object):
                         chart = alt.hconcat(*chart_list) # 0  
 
 
-                #3 Col Dimension 1 Measurement 
+                #3 Col Dimension 3 Measurement 
 
                 if len(col_index) == 3 and row_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1331,8 +1653,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1341,8 +1663,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1388,13 +1710,13 @@ class Ui_MainWindow(object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
                                                     
             count_Row = 0
             count_Column = 0
@@ -1430,15 +1752,21 @@ class Ui_MainWindow(object):
             #meassure 2 or more
             if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
             # 1 row Dimension Many Col Measurement
+            # 1 row Dimension Many Col Measurement
                 if len(row_index) == 1 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
                         chart_list.append(f"chart{j}") # for chart_list have array
                     for i in range(len(Alt_Axis_list)):
+
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array
                             .mark_line()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
                             .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
@@ -1448,7 +1776,10 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
                             .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
@@ -1491,7 +1822,8 @@ class Ui_MainWindow(object):
                         chart = alt.hconcat(*chart_list) # 0                
 
 
-                #2 row Dimension Many Col Measurement
+                #2 row Dimension Many Col Measurement Finish
+
                 if len(row_index) == 2 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
                         chart_list.append(f"chart{j}") # for chart_list have array
@@ -1500,8 +1832,11 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1510,8 +1845,11 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1530,8 +1868,9 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1540,8 +1879,9 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
+                            # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1550,7 +1890,7 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0                      
                 
-                #3 Row Dimension 1 Measurement 
+                #3 Row Dimension 3 Col Measurement 
 
                 if len(row_index) == 3 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1560,8 +1900,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1570,8 +1910,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
@@ -1580,7 +1920,8 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0  
 
-                #3 Col Dimension 1 Measurement 
+
+                #3 Col Dimension 3 Measurement 
 
                 if len(col_index) == 3 and row_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1590,8 +1931,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1600,16 +1941,17 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
                             )
+
+
                     if count_Row == 1:
                         chart = chart_list[0]
                     else:
-                        chart = alt.hconcat(*chart_list) # 0     
-            
+                        chart = alt.hconcat(*chart_list) # 0                 
             
             else:
 
@@ -1641,13 +1983,13 @@ class Ui_MainWindow(object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
 
             count_Row = 0
             count_Column = 0
@@ -1680,7 +2022,10 @@ class Ui_MainWindow(object):
             print(Alt_Axis_list)
             print(row_index)
 
+ 
+
             if ((count_Column >1 and len(row_index) !=0)  or (count_Row >1 and len(col_index) !=0)):
+                print("if >1")
             # 1 row Dimension Many Col Measurement
                 if len(row_index) == 1 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)): 
@@ -1802,27 +2147,152 @@ class Ui_MainWindow(object):
                 
 
 
-
             else:
-
+                print("else")
                 if filter_str != "":
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
                     .mark_arc()
                     .encode(*encode_PieList ,*encode_ColorList, tooltip =tooltip_list)
-                    # .resolve_scale(x="independent",y="independent")
+                    .resolve_scale(theta="independent",color="independent")
                     .properties(title="Pie chart")
-                    .configure_title(anchor="start")
+                    # .configure_title(anchor="start")
                     )    
                 else:       
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data[data])
                     .mark_arc()
                     .encode(*encode_PieList,*encode_ColorList , tooltip =tooltip_list)
-                    # .resolve_scale(x="independent",y="independent")
+                    .resolve_scale(theta="independent",color="independent")
                     .properties(title="Pie chart")
-                    .configure_title(anchor="start")
+                    # .configure_title(anchor="start")
                     )
+
+            if ((count_Column ==1 and len(row_index) !=0)  or (count_Row ==1 and len(col_index) !=0)):
+                print("if ==1")
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )   
+
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )
+
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                    if filter_str != "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )    
+                    else:       
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data])
+                        .mark_arc()
+                        .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(theta="independent",color="independent")
+                        .properties(title="pie chart")
+                        # .configure_title(anchor="start")
+                        )   
+
+
+
+                
     def plot_bar(self): 
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")   
@@ -1832,7 +2302,7 @@ class Ui_MainWindow(object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()
+        # self.gridtable()
         
     def plot_line(self):
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
@@ -1843,7 +2313,7 @@ class Ui_MainWindow(object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()
+        # self.gridtable()
 
     def plot_pie(self):
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
@@ -1854,7 +2324,7 @@ class Ui_MainWindow(object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        self.gridtable()        
+        # self.gridtable()        
         
     def gridtable(self):
         col_index = []
@@ -1880,13 +2350,13 @@ class Ui_MainWindow(object):
                     pass
                 else:    
                     for i in filter_key[s[x]]:
-                        filter_str += s[x] +' != "'+i+'"' +" and "
+                        filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
             for z in range(len(s)):
                 if s[z] not in op_C:   
                     pass
                 else:
                     if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":    
-                        filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
+                        filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
                                         
         if filter_str != "":
             print(filter_str)
@@ -1916,10 +2386,22 @@ class Ui_MainWindow(object):
                 self.Value.show()
 
             else:
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()
+                if "Date" in item2.text():
+                    if "Year" in item2.text() or "Month" in item2.text() or "Day" in item2.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()                                        
+                else:
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()
         else:
             if str(item2.text()) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
@@ -1928,10 +2410,22 @@ class Ui_MainWindow(object):
                 self.Value.show()
 
             else:
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()            
+                if "Date" in item2.text():
+                    if "Year" in item2.text() or "Month" in item2.text() or "Day" in item2.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()                                                              
+                else:                
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()            
            
 
     def filterdown(self):
@@ -1944,10 +2438,22 @@ class Ui_MainWindow(object):
                 self.ui.setupUi(item3,self.Value)
                 self.Value.show()
             else :
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()               
+                if "Date" in item3.text():
+                    if "Year" in item3.text() or "Month" in item3.text() or "Day" in item3.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()      
+                else:                                    
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()               
         else:
             if str(item3.text()) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
@@ -1955,10 +2461,22 @@ class Ui_MainWindow(object):
                 self.ui.setupUi(item3,self.Value)
                 self.Value.show()
             else :
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()
+                if "Date" in item3.text():
+                    if "Year" in item3.text() or "Month" in item3.text() or "Day" in item3.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()  
+                else:                                    
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show() 
 
 
     def clear_col(self):
