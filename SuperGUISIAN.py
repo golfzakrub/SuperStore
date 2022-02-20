@@ -1436,8 +1436,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if s[x] not in filter_key:   
                         pass
                     else:    
-                        for i in filter_key[s[x]]:
-                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
+                        filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -1810,8 +1809,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if s[x] not in filter_key:   
                         pass
                     else:    
-                        for i in filter_key[s[x]]:
-                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
+                        filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -2181,8 +2179,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if s[x] not in filter_key:   
                         pass
                     else:    
-                        for i in filter_key[s[x]]:
-                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
+                        filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -2551,8 +2548,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if s[x] not in filter_key:   
                     pass
                 else:    
-                    for i in filter_key[s[x]]:
-                        filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
+                    filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
             for z in range(len(s)):
                 if s[z] not in op_C:   
                     pass
