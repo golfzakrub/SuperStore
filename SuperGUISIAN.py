@@ -1011,9 +1011,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         for x in range(len(Date_list)):
             split_list[x] = self.all_data[Date_list[x]].str.split("-",expand=True)
             ##### split %Y %M %D
-            self.all_data[str(Date_list[x])+" Day"] = split_list[x][2]
+            self.all_data[str(Date_list[x])+" Day"] = split_list[x][0]
             self.all_data[str(Date_list[x])+" Month"] = split_list[x][1]
-            self.all_data[str(Date_list[x])+" Year"] = split_list[x][0]
+            self.all_data[str(Date_list[x])+" Year"] = split_list[x][2]
             #### str to int
             self.all_data[str(Date_list[x])+" Day"].astype(int)
             self.all_data[str(Date_list[x])+" Month"].astype(int)
@@ -1408,13 +1408,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
             print("OPC",op_C)                   
             print(filter_str)
 
@@ -1686,13 +1686,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
                                                     
             count_Row = 0
             count_Column = 0
@@ -1956,13 +1956,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += s[x] +' != "'+i+'"' +" and "
+                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
                     else:    
                         if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":
-                            filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
+                            filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and " 
 
             count_Row = 0
             count_Column = 0
@@ -2195,13 +2195,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     pass
                 else:    
                     for i in filter_key[s[x]]:
-                        filter_str += s[x] +' != "'+i+'"' +" and "
+                        filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
             for z in range(len(s)):
                 if s[z] not in op_C:   
                     pass
                 else:
                     if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":    
-                        filter_str += s[z] +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
+                        filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
                                         
         if filter_str != "":
             print(filter_str)
