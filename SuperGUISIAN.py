@@ -1173,12 +1173,18 @@ class Ui_MainWindow(object):
                     for j in range(len(Alt_Axis_list)):
                         chart_list.append(f"chart{j}") # for chart_list have array
                     for i in range(len(Alt_Axis_list)):
+                        # min_value = min()
+                        # max_value = max()
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
+
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1187,8 +1193,11 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0]),
+                            tooltip =tooltip_list)
+                            
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1230,7 +1239,7 @@ class Ui_MainWindow(object):
                         chart = alt.hconcat(*chart_list) # 0                
 
 
-                #2 row Dimension Many Col Measurement
+                #2 row Dimension Many Col Measurement Finish
 
                 if len(row_index) == 2 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1240,8 +1249,10 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1250,8 +1261,10 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1270,8 +1283,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1280,8 +1293,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1290,7 +1303,7 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0                      
                 
-                #3 Row Dimension 1 Measurement 
+                #3 Row Dimension 3 Col Measurement 
 
                 if len(row_index) == 3 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1300,8 +1313,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1310,8 +1323,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0]),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(y="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1321,7 +1334,7 @@ class Ui_MainWindow(object):
                         chart = alt.hconcat(*chart_list) # 0  
 
 
-                #3 Col Dimension 1 Measurement 
+                #3 Col Dimension 3 Measurement 
 
                 if len(col_index) == 3 and row_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1331,8 +1344,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")  
                             )  
@@ -1341,8 +1354,8 @@ class Ui_MainWindow(object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_bar()
-                            .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
-                            .resolve_scale(x="independent",y="independent")
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .resolve_scale(x="independent")
                             .properties(title="bar chart")
                             # .configure_title(anchor="start")
                             )
@@ -1550,7 +1563,7 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0                      
                 
-                #3 Row Dimension 1 Measurement 
+                #3 Row Dimension many Measurement 
 
                 if len(row_index) == 3 and col_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1580,7 +1593,7 @@ class Ui_MainWindow(object):
                     else:
                         chart = alt.hconcat(*chart_list) # 0  
 
-                #3 Col Dimension 1 Measurement 
+                #3 Col Dimension many Measurement 
 
                 if len(col_index) == 3 and row_index[0] in Measurement:
                     for j in range(len(Alt_Axis_list)):
@@ -1810,18 +1823,18 @@ class Ui_MainWindow(object):
                     chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
                     .mark_arc()
                     .encode(*encode_PieList ,*encode_ColorList, tooltip =tooltip_list)
-                    # .resolve_scale(x="independent",y="independent")
+                    .resolve_scale(theta="independent",color="independent")
                     .properties(title="Pie chart")
-                    .configure_title(anchor="start")
+                    # .configure_title(anchor="start")
                     )    
                 else:       
                     alt.data_transformers.disable_max_rows()
                     chart = (alt.Chart(self.all_data[data])
                     .mark_arc()
                     .encode(*encode_PieList,*encode_ColorList , tooltip =tooltip_list)
-                    # .resolve_scale(x="independent",y="independent")
+                    .resolve_scale(theta="independent",color="independent")
                     .properties(title="Pie chart")
-                    .configure_title(anchor="start")
+                    # .configure_title(anchor="start")
                     )
     def plot_bar(self): 
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
