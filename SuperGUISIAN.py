@@ -2,13 +2,13 @@
 
 from distutils.log import error
 from tracemalloc import start
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets 
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
-from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetItem,QFileDialog,QWidget
+from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetItem,QFileDialog,QWidget,QMenu
 import  pandas as pd
 from io import StringIO
 import altair as alt
-from PyQt5.QtCore import QDataStream, Qt
+from PyQt5.QtCore import QDataStream, Qt ,QEvent
 import json
 import os.path
 
@@ -156,9 +156,252 @@ class Ui_Filter_Window(object):
         
                 
 
+## y/m/d       
+class Ui_Filter_date_Window(object):
+    def setupUi(self,item_head,Filter_Window,listWidget,all_data):
+        Filter_Window.setObjectName("Filter_Window")
+        Filter_Window.resize(589, 575)
+        self.centralwidget = QtWidgets.QWidget(Filter_Window)
+        self.centralwidget.setObjectName("centralwidget")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 391, 481))
+        self.listWidget.setObjectName("listWidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
+        self.label.setObjectName("label")
+        self.Apply = QtWidgets.QPushButton(self.centralwidget)
+        self.Apply.setGeometry(QtCore.QRect(460, 360, 75, 23))
+        self.Apply.setObjectName("Apply")
+        self.Add_ALL_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_2.setGeometry(QtCore.QRect(430, 80, 75, 23))
+        self.Add_ALL_2.setObjectName("Add_ALL_2")
+        self.Remove_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_ALL_3.setGeometry(QtCore.QRect(430, 120, 75, 23))
+        self.Remove_ALL_3.setObjectName("Remove_ALL_3")
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(450, 220, 51, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.setItemText(0, "")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(510, 220, 61, 31))
+        self.textEdit.setObjectName("textEdit")
+        self.Add_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_3.setGeometry(QtCore.QRect(460, 290, 75, 23))
+        self.Add_ALL_3.setObjectName("Add_ALL_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(410, 230, 41, 21))
+        self.label_4.setObjectName("label_4")
+        Filter_Window.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(Filter_Window)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 21))
+        self.menubar.setObjectName("menubar")
+        Filter_Window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(Filter_Window)
+        self.statusbar.setObjectName("statusbar")
+        Filter_Window.setStatusBar(self.statusbar)
+
+        self.filterdata(listWidget,all_data)
+        
         
 
+        self.Add_ALL_3.clicked.connect(self.filter_date)
+        self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Add_ALL_2.clicked.connect(self.select_all)
+        self.Remove_ALL_3.clicked.connect(self.clear_all)
+        
 
+        self.retranslateUi(Filter_Window)
+        QtCore.QMetaObject.connectSlotsByName(Filter_Window)
+
+    def retranslateUi(self, Filter_Window):
+        _translate = QtCore.QCoreApplication.translate
+        Filter_Window.setWindowTitle(_translate("Filter_Window", "Date Filter"))
+        self.label.setText(_translate("Filter_Window", "LIST HEADER"))
+        self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Add_ALL_2.setText(_translate("Filter_Window", "Add ALL"))
+        self.Remove_ALL_3.setText(_translate("Filter_Window", "Remove ALL"))
+        self.comboBox.setItemText(1, _translate("Filter_Window", ">"))
+        self.comboBox.setItemText(2, _translate("Filter_Window", "<"))
+        self.comboBox.setItemText(3, _translate("Filter_Window", "="))
+        self.Add_ALL_3.setText(_translate("Filter_Window", "OK"))
+        self.label_4.setText(_translate("Filter_Window", "Range"))       
+        
+    def filterdata(self,listWidget,all_data):
+        all_data = all_data
+        
+        item2 = listWidget.currentItem().text()
+        for i in all_data[item2].unique():
+            self.item = QtWidgets.QListWidgetItem(i)
+            self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            self.item.setCheckState(QtCore.Qt.Checked)
+            self.listWidget.addItem(self.item)       
+
+    def filter_date(self):
+        op = {">":(lambda x,y:x>y),"<":(lambda x,y:x<y),"=":(lambda x,y:x==y)}        
+        if self.textEdit.toPlainText() == "" or  self.comboBox.currentText() == "":
+            return
+        for i in range(self.listWidget.count()):
+            x = self.listWidget.item(i).text()
+            y = self.textEdit.toPlainText()
+            if  op[self.comboBox.currentText()](x,y):
+                self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+                
+    
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)                         
+
+    def filterComplete(self,item_head):
+        self.getCheckItem = []
+        self.getCheckItem.clear()
+        self.item = item_head
+        for i in range(self.listWidget.count()):
+            if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
+                self.getCheckItem.append(self.listWidget.item(i).text())
+
+        Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)   
+
+#all date
+class Ui_Filter_Date_Window(object):
+    def setupUi(self,item_head,Filter_Window,listWidget,all_data):
+        Filter_Window.setObjectName("Filter_Window")
+        Filter_Window.resize(589, 575)
+        self.centralwidget = QtWidgets.QWidget(Filter_Window)
+        self.centralwidget.setObjectName("centralwidget")
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setGeometry(QtCore.QRect(10, 50, 391, 481))
+        self.listWidget.setObjectName("listWidget")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(10, 10, 251, 41))
+        self.label.setObjectName("label")
+        self.Apply = QtWidgets.QPushButton(self.centralwidget)
+        self.Apply.setGeometry(QtCore.QRect(460, 360, 75, 23))
+        self.Apply.setObjectName("Apply")
+        self.Add_ALL_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_2.setGeometry(QtCore.QRect(430, 80, 75, 23))
+        self.Add_ALL_2.setObjectName("Add_ALL_2")
+        self.Remove_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Remove_ALL_3.setGeometry(QtCore.QRect(430, 120, 75, 23))
+        self.Remove_ALL_3.setObjectName("Remove_ALL_3")
+        self.comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox.setGeometry(QtCore.QRect(450, 220, 51, 31))
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.setItemText(0, "")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox2 = QtWidgets.QComboBox(self.centralwidget)
+        self.comboBox2.setGeometry(QtCore.QRect(450, 260, 51, 31))
+        self.comboBox2.setObjectName("comboBox")
+        self.comboBox2.addItem("")
+        self.comboBox2.setItemText(0, "")
+        self.comboBox2.addItem("")
+        self.comboBox2.addItem("")
+        self.comboBox2.addItem("")
+        self.textEdit = QtWidgets.QTextEdit(self.centralwidget)
+        self.textEdit.setGeometry(QtCore.QRect(510, 220, 61, 31))
+        self.textEdit.setObjectName("textEdit")
+        self.Add_ALL_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.Add_ALL_3.setGeometry(QtCore.QRect(460, 290, 75, 23))
+        self.Add_ALL_3.setObjectName("Add_ALL_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(410, 230, 41, 21))
+        self.label_4.setObjectName("label_4")
+        Filter_Window.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(Filter_Window)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 589, 21))
+        self.menubar.setObjectName("menubar")
+        Filter_Window.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(Filter_Window)
+        self.statusbar.setObjectName("statusbar")
+        Filter_Window.setStatusBar(self.statusbar)
+
+        self.filterdata(listWidget,all_data)
+        
+        
+
+        self.Add_ALL_3.clicked.connect(self.filter_date)
+        self.Apply.clicked.connect(lambda :self.filterComplete(item_head))
+        self.Add_ALL_2.clicked.connect(self.select_all)
+        self.Remove_ALL_3.clicked.connect(self.clear_all)
+        
+
+        self.retranslateUi(Filter_Window)
+        QtCore.QMetaObject.connectSlotsByName(Filter_Window)
+
+    def retranslateUi(self, Filter_Window):
+        _translate = QtCore.QCoreApplication.translate
+        Filter_Window.setWindowTitle(_translate("Filter_Window", "Date Filter"))
+        self.label.setText(_translate("Filter_Window", "LIST HEADER"))
+        self.Apply.setText(_translate("Filter_Window", "Apply"))
+        self.Add_ALL_2.setText(_translate("Filter_Window", "Add ALL"))
+        self.Remove_ALL_3.setText(_translate("Filter_Window", "Remove ALL"))
+        self.comboBox.setItemText(1, _translate("Filter_Window", ">"))
+        self.comboBox.setItemText(2, _translate("Filter_Window", "<"))
+        self.comboBox.setItemText(3, _translate("Filter_Window", "="))
+        self.comboBox2.setItemText(1, _translate("Filter_Window", "Day"))
+        self.comboBox2.setItemText(2, _translate("Filter_Window", "Month"))
+        self.comboBox2.setItemText(3, _translate("Filter_Window", "Year"))
+        self.Add_ALL_3.setText(_translate("Filter_Window", "OK"))
+        self.label_4.setText(_translate("Filter_Window", "Range"))       
+        
+    def filterdata(self,listWidget,all_data):
+        all_data = all_data
+        
+        item2 = listWidget.currentItem().text()
+        for i in all_data[item2].unique():
+            self.item = QtWidgets.QListWidgetItem(i)
+            self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
+            self.item.setCheckState(QtCore.Qt.Checked)
+            self.listWidget.addItem(self.item)       
+
+    def filter_date(self):
+        op = {">":(lambda x,y:x>y),"<":(lambda x,y:x<y),"=":(lambda x,y:x==y)}        
+        if self.textEdit.toPlainText() == "" or  self.comboBox.currentText() == "":
+            return
+        for i in range(self.listWidget.count()):
+            if self.comboBox2.currentText() == "Day":
+                x = self.listWidget.item(i).text()[0:2] #19-15-42
+            if self.comboBox2.currentText() == "Month":
+                x = self.listWidget.item(i).text()[3:5]
+            if self.comboBox2.currentText() == "Year":
+                x = self.listWidget.item(i).text()[6:]
+            y = self.textEdit.toPlainText()
+            if  op[self.comboBox.currentText()](x,y):
+                self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)
+            else:
+                self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+            
+                
+    
+    def clear_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(~(QtCore.Qt.Checked))
+
+    def select_all(self):
+        for i in range(self.listWidget.count()):
+            self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)                         
+
+    def filterComplete(self,item_head):
+        self.getCheckItem = []
+        self.getCheckItem.clear()
+        self.item = item_head
+        for i in range(self.listWidget.count()):
+            if self.listWidget.item(i).checkState() != QtCore.Qt.Checked : #send Signal not check 
+                self.getCheckItem.append(self.listWidget.item(i).text())
+
+        Ui_MainWindow.getDataFilter(self,self.getCheckItem,self.item)      
 
 class Ui_Value(object):
     def setupUi(self,item,Value):
@@ -496,8 +739,7 @@ class Ui_Value(object):
 
         
 
-
-class Ui_MainWindow(object):
+class Ui_MainWindow(QtWidgets.QMainWindow,object):
     
 
     def setupUi(self, MainWindow):
@@ -623,17 +865,21 @@ class Ui_MainWindow(object):
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_2.setDefaultDropAction(QtCore.Qt.MoveAction)    
         self.listWidget_2.doubleClicked.connect(self.filterup)
-        self.listWidget_2.clicked.connect(self.drill_down_up)
+        # self.listWidget_2.clicked.connect(self.drill_down_up)
+        self.listWidget_2.installEventFilter(self)
 
         self.listWidget_3.setAcceptDrops(True)
         self.listWidget_3.setDragEnabled(True) #DRAG AND DROP
         self.listWidget_3.setDefaultDropAction(QtCore.Qt.MoveAction)
         self.listWidget_3.doubleClicked.connect(self.filterdown)
-        self.listWidget_3.clicked.connect(self.drill_down_down)
+        # self.listWidget_3.clicked.connect(self.drill_down_down)
+        self.listWidget_3.installEventFilter(self)
 
         self.listWidget_4.setAcceptDrops(True)
         self.listWidget_4.setDragEnabled(True) #DRAG AND DROP
-        self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction)    
+        self.listWidget_4.setDefaultDropAction(QtCore.Qt.MoveAction) 
+
+
         
         self.pushButton.clicked.connect(self.getFile)
         self.Plot_Bar_Button.clicked.connect(self.plot_bar)
@@ -772,6 +1018,33 @@ class Ui_MainWindow(object):
             self.all_data[str(Date_list[x])+" Day"].astype(int)
             self.all_data[str(Date_list[x])+" Month"].astype(int)
             self.all_data[str(Date_list[x])+" Year"].astype(int)
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            source is self.listWidget_3):
+            self.menu = QtWidgets.QMenu()
+            
+            self.action = QtWidgets.QAction("Drill Down")
+            self.menu.addAction(self.action)
+            self.action.triggered.connect(self.drill_down_down)
+            if self.menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                # print(item.text())
+            return True
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            source is self.listWidget_2):
+            self.menu = QtWidgets.QMenu()
+            
+            self.action = QtWidgets.QAction("Drill Down")
+            self.menu.addAction(self.action)
+            self.action.triggered.connect(self.drill_down_up)
+            if self.menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                # print(item.text())
+            return True
+        
+        return super().eventFilter(source, event)
+
 
     def drill_down_up(self):
         head_columns = []
@@ -1946,10 +2219,22 @@ class Ui_MainWindow(object):
                 self.Value.show()
 
             else:
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()
+                if "Date" in item2.text():
+                    if "Year" in item2.text() or "Month" in item2.text() or "Day" in item2.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()                                        
+                else:
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()
         else:
             if str(item2.text()) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
@@ -1958,10 +2243,22 @@ class Ui_MainWindow(object):
                 self.Value.show()
 
             else:
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()            
+                if "Date" in item2.text():
+                    if "Year" in item2.text() or "Month" in item2.text() or "Day" in item2.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()                                                              
+                else:                
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()            
            
 
     def filterdown(self):
@@ -1974,10 +2271,22 @@ class Ui_MainWindow(object):
                 self.ui.setupUi(item3,self.Value)
                 self.Value.show()
             else :
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()               
+                if "Date" in item3.text():
+                    if "Year" in item3.text() or "Month" in item3.text() or "Day" in item3.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()      
+                else:                                    
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()               
         else:
             if str(item3.text()) in Measurement :
                 self.Value = QtWidgets.QMainWindow()
@@ -1985,10 +2294,22 @@ class Ui_MainWindow(object):
                 self.ui.setupUi(item3,self.Value)
                 self.Value.show()
             else :
-                self.Filter_Window = QtWidgets.QMainWindow()
-                self.ui2 = Ui_Filter_Window()
-                self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-                self.Filter_Window.show()
+                if "Date" in item3.text():
+                    if "Year" in item3.text() or "Month" in item3.text() or "Day" in item3.text():
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()
+                    else:
+                        self.Filter_Window = QtWidgets.QMainWindow()
+                        self.ui2 = Ui_Filter_Date_Window()
+                        self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                        self.Filter_Window.show()  
+                else:                                    
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show() 
 
 
     def clear_col(self):
