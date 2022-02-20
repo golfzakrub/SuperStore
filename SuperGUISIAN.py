@@ -12,6 +12,8 @@ from PyQt5.QtCore import QDataStream, Qt ,QEvent
 import json
 import os.path
 
+import sys
+
 class headTopic:  
     def __init__(self): 
         self.data_head = {} 
@@ -26,6 +28,7 @@ class headTopic:
     def backup_head(self):
         with open('data_head.json', 'w') as head_file:
             json.dump(self.data_head, head_file)
+            
 
             
 class WebEngineView(QtWebEngineWidgets.QWebEngineView):
@@ -1041,6 +1044,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             self.all_data[str(Date_list[x])+" Day"].astype(int)
             self.all_data[str(Date_list[x])+" Month"].astype(int)
             self.all_data[str(Date_list[x])+" Year"].astype(int)
+        
 
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.ContextMenu and
@@ -1264,6 +1268,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         print(namefile)
         self.showdata_head()
         self.showdata_table()
+        print("read file finished")
+
         
     def readUnionData(self):
         if self.filename == "":
@@ -1321,7 +1327,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         encode_ColorList = []
         tooltip_list = []
         data= []
-        
+        sys.setrecursionlimit(10000)
         
         for r in range(len(self.listWidget_3)):            
             if "(" in self.listWidget_3.item(r).text() :
@@ -1431,7 +1437,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
+                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -1710,7 +1716,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
+                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -1983,7 +1989,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         pass
                     else:    
                         for i in filter_key[s[x]]:
-                            filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
+                            filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
                 for z in range(len(s)):
                     if s[z] not in op_C:   
                         pass
@@ -2293,7 +2299,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
 
                 
-    def plot_bar(self): 
+    def plot_bar(self):
+        print("Start Bar Plot...")
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")   
         bar = "bar"        
@@ -2302,9 +2309,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        # self.gridtable()
+        print("Bar Plot success!!!")
         
     def plot_line(self):
+        print("Start Line Plot...")
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")   
         line = "line"
@@ -2313,9 +2321,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        # self.gridtable()
+        print("Line Plot success!!!")
 
     def plot_pie(self):
+        print("Start Pie Plot...")
         if len(self.listWidget_3) == 0 and len(self.listWidget_2) == 0:
             return print("ERROR")
         pie ="pie"
@@ -2324,7 +2333,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.view =WebEngineView()
         self.view.updateChart(chart)
         self.verticalLayout.addWidget(self.view)
-        # self.gridtable()        
+        print("Pie Plot success!!!")       
         
     def gridtable(self):
         col_index = []
@@ -2350,7 +2359,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     pass
                 else:    
                     for i in filter_key[s[x]]:
-                        filter_str += '`'+s[x]+'`' +' != "'+i+'"' +" and "
+                        filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
             for z in range(len(s)):
                 if s[z] not in op_C:   
                     pass
