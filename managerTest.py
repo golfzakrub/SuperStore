@@ -46,9 +46,5 @@ class Manager():
         return self.data_head
 
 
-    def backup_head(self,file):
-        with open(file, 'w') as head_file:
-            json.dump(self.data_head, head_file)
-          
-        return self.data_head
+
 
