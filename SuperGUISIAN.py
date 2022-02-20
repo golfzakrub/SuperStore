@@ -2075,6 +2075,104 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     .configure_title(anchor="start")
                     )
 
+            if ((count_Column ==1 and len(row_index) !=0)  or (count_Row ==1 and len(col_index) !=0)):
+                print("if m==1")
+                
+                #dimension 2 Col 1  Row measurement
+                if len(col_index) == 2 and row_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        )
+                #dimension 2 Row 1 Col  measurement
+                if len(row_index) == 2 and col_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        )                
+
+                #dimension 3 Col 1  Row measurement
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]),color=alt.Color(col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]),color=alt.Color(col_index[2]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        )
+                #dimension 3 Row 1 Col  measurement
+                if len(row_index) == 3 and col_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        ) 
+
+
         elif  fig == "pie":     
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
