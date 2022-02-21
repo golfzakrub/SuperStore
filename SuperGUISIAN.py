@@ -392,13 +392,18 @@ class Ui_Filter_Date_Window(object):
         if self.textEdit.toPlainText() == "" or  self.comboBox.currentText() == "":
             return
         for i in range(self.listWidget.count()):
+            if "-" in self.listWidget.item(i).text():
+                split_date = self.listWidget.item(i).text().split("-")
+            if "/" in self.listWidget.item(i).text():
+                split_date = self.listWidget.item(i).text().split("/")
+
             if self.comboBox2.currentText() == "Day":
-                x = self.listWidget.item(i).text()[0:2] #19-15-42
+                x = int(split_date[0]) 
             if self.comboBox2.currentText() == "Month":
-                x = self.listWidget.item(i).text()[3:5]
+                x = int(split_date[1])    
             if self.comboBox2.currentText() == "Year":
-                x = self.listWidget.item(i).text()[6:]
-            y = self.textEdit.toPlainText()
+                x = int(split_date[2])
+            y = int(self.textEdit.toPlainText())
             if  op[self.comboBox.currentText()](x,y):
                 self.listWidget.item(i).setCheckState(QtCore.Qt.Checked)
             else:
@@ -916,7 +921,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
+        self.tableWidget_2.setSortingEnabled(True)        
 
 
 
@@ -1783,7 +1788,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                         .mark_bar()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="bar chart")
                         # .configure_title(anchor="start")  
@@ -1794,7 +1799,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
                         .mark_bar()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="bar chart")
                         # .configure_title(anchor="start")
@@ -1932,7 +1937,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
-                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
                             tooltip =tooltip_list)
                             .resolve_scale(y="independent")
                             # .resolve_scale(x="independent",y="independent")
@@ -1945,7 +1950,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
-                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
+                            y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
                             tooltip =tooltip_list)
                             .resolve_scale(y="independent")
                             # .resolve_scale(x="independent",y="independent")
@@ -1967,7 +1972,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
                             # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
@@ -1978,7 +1983,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
                             # .resolve_scale(x="independent",y="independent")
                             .properties(title="line chart")
@@ -1999,7 +2004,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
                             .resolve_scale(y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
@@ -2009,7 +2014,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
+                            .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), tooltip =tooltip_list)
                             .resolve_scale(y="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
@@ -2030,7 +2035,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
-                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")  
@@ -2040,7 +2045,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             alt.data_transformers.disable_max_rows()
                             chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
-                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='descending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
+                            .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), tooltip =tooltip_list)
                             .resolve_scale(x="independent")
                             .properties(title="line chart")
                             # .configure_title(anchor="start")
@@ -2106,7 +2111,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                         .mark_line()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="line chart")
                         # .configure_title(anchor="start")  
@@ -2117,7 +2122,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
                         .mark_line()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="line chart")
                         # .configure_title(anchor="start")
@@ -2153,7 +2158,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                         .mark_line()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="line chart")
                         # .configure_title(anchor="start")  
@@ -2164,7 +2169,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
                         .mark_line()
                         .encode(x= alt.X(col_index[0]),
-                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),tooltip =tooltip_list)
                         .resolve_scale(y="independent")
                         .properties(title="line chart")
                         # .configure_title(anchor="start")
