@@ -1710,7 +1710,54 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
             if ((count_Column ==1 and len(row_index) !=0)  or (count_Row ==1 and len(col_index) !=0)):
                 print("if m==1")
-                
+
+                #dimension 1 Col 1  Row measurement
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_bar()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="bar chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_bar()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="bar chart")
+                        # .configure_title(anchor="start")
+                        )
+                #dimension 1 Row 1 Col  measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_bar()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="bar chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_bar()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="bar chart")
+                        # .configure_title(anchor="start")
+                        )            
+
                 #dimension 2 Col 1  Row measurement
                 if len(col_index) == 2 and row_index[0] in Measurement:
                         
@@ -2080,7 +2127,53 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
             if ((count_Column ==1 and len(row_index) !=0)  or (count_Row ==1 and len(col_index) !=0)):
                 print("if m==1")
-                
+
+                if len(col_index) == 1 and row_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), tooltip =tooltip_list)
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        )
+                #dimension 1 Row 1 Col  measurement
+                if len(row_index) == 1 and col_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(col_index[0]),
+                        y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),tooltip =tooltip_list)
+                        .resolve_scale(y="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")
+                        )    
+
                 #dimension 2 Col 1  Row measurement
                 if len(col_index) == 2 and row_index[0] in Measurement:
                         
