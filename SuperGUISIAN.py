@@ -2254,7 +2254,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if count_Column == 1:
                         chart = chart_list[0]
                     else:
-                        chart = alt.hconcat(*chart_list) # 0
+                        chart = alt.hconcat(*chart_list).resolve_scale(theta="independent",color="independent") # 0
                 
             # 1 Col Dimension Many Row Measurement
                 if len(col_index) == 1 and row_index[0] in Measurement:
@@ -2284,7 +2284,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if count_Row == 1:
                         chart = chart_list[0]
                     else:
-                        chart = alt.vconcat(*chart_list) # 0
+                        chart = alt.vconcat(*chart_list).resolve_scale(theta="independent",color="independent") # 0
 
             # 2 row Dimension Many Col Measurement                  
 
@@ -2314,7 +2314,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if count_Column == 1:
                         chart = chart_list[0]
                     else:
-                        chart = alt.hconcat(*chart_list) # 0
+                        chart = alt.hconcat(*chart_list).resolve_scale(theta="independent",color="independent") # 0
 
             # 2 Col Dimension Many Row Measurement
                 if len(col_index) == 2 and row_index[0] in Measurement:
@@ -2344,7 +2344,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     if count_Row == 1:
                         chart = chart_list[0]
                     else:
-                        chart = alt.vconcat(*chart_list) # 0
+                        chart = alt.vconcat(*chart_list).resolve_scale(theta="independent",color="independent") # 0
                 
 
 
