@@ -1291,7 +1291,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if self.data_1.columns[i] == self.data_2.columns[i] :
                     self.all_data = pd.concat([self.data_1,self.data_2],axis=0).drop_duplicates().reset_index(drop=True)
                     self.showdata_head()
-                    self.showdata_table()  
+                    self.showdata_table()
+                    return True
+        else:
+            return False 
     
     def getFile(self):
         self.listWidget_2.clear()
