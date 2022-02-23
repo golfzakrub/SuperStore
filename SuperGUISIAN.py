@@ -11,6 +11,7 @@ import altair as alt
 from PyQt5.QtCore import QDataStream, Qt ,QEvent
 import json
 import os.path
+import hashlib
 
 import sys
 
@@ -29,7 +30,11 @@ class headTopic:
         with open('data_head.json', 'w') as head_file:
             json.dump(self.data_head, head_file)
             
-
+    def check_md5(self,namefile,filename):
+        if self.data_head[namefile]["md5"] == hashlib.md5(open(filename,'rb').read()).hexdigest():
+            return True
+        else:
+            return False
             
 class WebEngineView(QtWebEngineWidgets.QWebEngineView):
     def __init__(self, parent=None):
@@ -976,9 +981,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         number = []
         string = []
         Topic = headTopic()
-        data_head_backup = Topic.get_backup()      
+        data_head_backup = Topic.get_backup()   
+           
         if namefile not in data_head_backup:
-            data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] }
+            md5 = hashlib.md5(open(self.filename,'rb').read()).hexdigest()
+            data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] ,"md5": md5}
             for x in self.all_data.columns:
                 if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
                     if "ID" in x or "Code" in x or "Date" in x:
@@ -999,38 +1006,69 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     data_head_backup[namefile]["Dimension"].append(str(x))
                     self.listWidget.addItem(x)
                 Topic.backup_head()
+                
         else:
-            for i in data_head_backup[namefile]["Dimension"]:
-                self.listWidget.addItem(i)
-                Dimension.append(i)
-                if self.all_data[i].dtypes == 'int64' or self.all_data[i].dtypes == 'float64':
-                    if "ID" in i or "Code" in i or "Date" in i:
-                        string.append(str(i))
-                        Dimension_number.append(str(i))
-                        self.all_data[i] = self.all_data[i].astype(str)
+            if Topic.check_md5(namefile,self.filename)  == True:  
+                for i in data_head_backup[namefile]["Dimension"]:
+                    self.listWidget.addItem(i)
+                    Dimension.append(i)
+                    if self.all_data[i].dtypes == 'int64' or self.all_data[i].dtypes == 'float64':
+                        if "ID" in i or "Code" in i or "Date" in i:
+                            string.append(str(i))
+                            Dimension_number.append(str(i))
+                            self.all_data[i] = self.all_data[i].astype(str)
+                        else:
+                            number.append(str(i))
+                            self.all_data[i] = self.all_data[i].astype(str)  
+                    else: 
+                        string.append(str(i))  
+                        
+                for x in data_head_backup[namefile]["Measurement"]:
+                    self.listWidget_4.addItem(x)
+                    Measurement.append(x) 
+                    if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
+                        if "ID" in x or "Code" in x or "Date" in x:
+                            Dimension_number.append(str(x))
+                            string.append(str(x))                        
+                        else:
+                            number.append(str(x))
+    
                     else:
-                        number.append(str(i))
-                        self.all_data[i] = self.all_data[i].astype(str)  
-                else: 
-                    string.append(str(i))  
-                    
-            for x in data_head_backup[namefile]["Measurement"]:
-                self.listWidget_4.addItem(x)
-                Measurement.append(x) 
-                if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
-                    if "ID" in x or "Code" in x or "Date" in x:
-                        Dimension_number.append(str(x))
-                        string.append(str(x))                        
-                    else:
-                        number.append(str(x))
-   
-                else:
-                    string.append(str(x))
-                    self.all_data[x] = self.all_data[x].astype(str) 
-
+                        string.append(str(x))
+                        self.all_data[x] = self.all_data[x].astype(str)
+                print("opened")
+                        
+            else:
+                md5 = hashlib.md5(open(self.filename,'rb').read()).hexdigest()
+                data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] ,"md5": md5}
+                for x in self.all_data.columns:
+                    if self.all_data[x].dtypes == 'int64' or self.all_data[x].dtypes == 'float64':
+                        if "ID" in x or "Code" in x or "Date" in x:
+                            self.all_data[x] = self.all_data[x].astype(str)
+                            Dimension.append(str(x))
+                            Dimension_number.append(str(x))
+                            string.append(str(x))
+                            data_head_backup[namefile]["Dimension"].append(str(x))
+                            self.listWidget.addItem(str(x))
+                        else :
+                            number.append(str(x))
+                            Measurement.append(x)
+                            data_head_backup[namefile]["Measurement"].append(str(x))
+                            self.listWidget_4.addItem(x)
+                    elif self.all_data[x].dtypes == 'object':
+                        Dimension.append(x)
+                        string.append(str(x))
+                        data_head_backup[namefile]["Dimension"].append(str(x))
+                        self.listWidget.addItem(x)
+                    Topic.backup_head()
+                print("open new")       
+                
+    # def split_date(self,Dimension):            
     def split_date(self):
         Date_list = []
         split_list = []
+        # Dimension = ['Ship Date','Order Date']
+        # self.all_data = pd.read_csv('Super2.csv',encoding = 'windows-1252').dropna()
         for i in Dimension:
             if "Date" in i:
                 Date_list.append(i)
@@ -1050,8 +1088,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             self.all_data[str(Date_list[x])+" Month"].astype(int)
             self.all_data[str(Date_list[x])+" Year"].astype(int)
         
-        if len(Date_list) > 0:
-            return True
+        if len(Date_list) > 0:            
+            return True           
         else:
             return False
         
@@ -2865,7 +2903,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             self.listWidget_4.addItem(i)
    
         self.listWidget_3.clear()    
-
 
 
 if __name__ == "__main__":
