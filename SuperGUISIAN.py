@@ -1279,6 +1279,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.showdata_head()
         self.showdata_table()
         print("read file finished")
+        return self.all_data
 
         
     def readUnionData(self):
@@ -1327,6 +1328,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
     def getDataFilter(self,data,item): ##recive DataFilter from filterComplete        
         filter_key[item] = data
+        if len(filter_key[item]) > 0:
+            return True
+        else:
+            return False  
 
 
 
