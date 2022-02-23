@@ -1050,6 +1050,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             self.all_data[str(Date_list[x])+" Month"].astype(int)
             self.all_data[str(Date_list[x])+" Year"].astype(int)
         
+        if len(Date_list) > 0:
+            return True
+        else:
+            return False
+        
 
     def eventFilter(self, source, event):
         if (event.type() == QtCore.QEvent.ContextMenu and
