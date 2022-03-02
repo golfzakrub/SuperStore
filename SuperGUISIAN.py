@@ -892,6 +892,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.listWidget.setAcceptDrops(True)
         self.listWidget.setDragEnabled(True) #DRAG AND DROP
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)  
+        self.listWidget.setSelectionMode(2) # add multiple
 
         self.listWidget_2.setAcceptDrops(True)
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
@@ -2005,7 +2006,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         if filter_str == "":            
                             alt.data_transformers.disable_max_rows()
 
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby([self.all_data[row_index[0]]])) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0]),
@@ -2018,7 +2019,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]).groupby([self.all_data[row_index[0]]]))
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0]),
