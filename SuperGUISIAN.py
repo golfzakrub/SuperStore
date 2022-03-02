@@ -983,6 +983,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         Topic = headTopic()
         data_head_backup = Topic.get_backup()   
            
+           
         if namefile not in data_head_backup:
             md5 = hashlib.md5(open(self.filename,'rb').read()).hexdigest()
             data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] ,"md5": md5}
