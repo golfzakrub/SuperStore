@@ -983,7 +983,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         Topic = headTopic()
         data_head_backup = Topic.get_backup()   
            
-           
+
         if namefile not in data_head_backup:
             md5 = hashlib.md5(open(self.filename,'rb').read()).hexdigest()
             data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] ,"md5": md5}
@@ -2002,10 +2002,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         # min_value = min()
                         # max_value = max()
-                        if filter_str == "":
+                        if filter_str == "":            
                             alt.data_transformers.disable_max_rows()
 
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby([self.all_data[row_index[0]]])) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0]),
@@ -2018,7 +2018,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]).groupby([self.all_data[row_index[0]]]))
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0]),
