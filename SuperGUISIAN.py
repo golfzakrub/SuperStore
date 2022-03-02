@@ -892,6 +892,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.listWidget.setAcceptDrops(True)
         self.listWidget.setDragEnabled(True) #DRAG AND DROP
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)  
+        self.listWidget.setSelectionMode(2) # add multiple
 
         self.listWidget_2.setAcceptDrops(True)
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
@@ -983,7 +984,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         Topic = headTopic()
         data_head_backup = Topic.get_backup()   
            
-           
+
         if namefile not in data_head_backup:
             md5 = hashlib.md5(open(self.filename,'rb').read()).hexdigest()
             data_head_backup[namefile] = {"Dimension":[] ,"Measurement":[] ,"md5": md5}
@@ -2002,7 +2003,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         # min_value = min()
                         # max_value = max()
-                        if filter_str == "":
+                        if filter_str == "":            
                             alt.data_transformers.disable_max_rows()
 
                             chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
