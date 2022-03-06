@@ -153,6 +153,9 @@ class Ui_Filter_Window(object):
         all_data = all_data
         
         item2 = listWidget.currentItem().text()
+        if "," in item2:
+            item2 = item2[:listWidget.currentItem().text().index(',')]
+
         for i in all_data[item2].unique():
             self.item = QtWidgets.QListWidgetItem(i)
             self.item.setFlags(self.item.flags() | QtCore.Qt.ItemIsUserCheckable)
@@ -1247,7 +1250,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     print("sad")
                     if head_columns[head_columns.index(item4)+1] not in list_widget:
                         self.listWidget_3.addItem(head_columns[head_columns.index(item4)+1]) 
-                        
+
     def update_head(self):
         if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
             return print("ERROR")   
@@ -1422,8 +1425,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         for c in range(len(self.listWidget_2)):
             if "(" in self.listWidget_2.item(c).text() :
                 col_index.append(self.listWidget_2.item(c).text()[self.listWidget_2.item(c).text().index("(")+1:self.listWidget_2.item(c).text().index(")")])
-            elif "," in self.listWidget_2.item(r).text() :
-                col_index.append(self.listWidget_2.item(r).text()[:self.listWidget_2.item(r).text().index(",")])                
+            elif "," in self.listWidget_2.item(c).text() :
+                col_index.append(self.listWidget_2.item(c).text()[:self.listWidget_2.item(c).text().index(",")])                
             else:    
                 col_index.append(self.listWidget_2.item(c).text())
         for data_row in range(len(row_index)):
@@ -2849,7 +2852,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 self.Value.show()
 
             else:
-                if "Date" in item2.text():
+                if "," in  item2.text():
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text()[:item2.text().index(",")],self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()    
+
+                elif "Date" in item2.text():
                     if "Year" in item2.text() or "Month" in item2.text() or "Day" in item2.text():
                         self.Filter_Window = QtWidgets.QMainWindow()
                         self.ui2 = Ui_Filter_date_Window()
@@ -2860,11 +2869,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         self.ui2 = Ui_Filter_Date_Window()
                         self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
                         self.Filter_Window.show()
-                elif "," in  item2.text():
-                    self.Filter_Window = QtWidgets.QMainWindow()
-                    self.ui2 = Ui_Filter_Window()
-                    self.ui2.setupUi(item2.text()[:item2.text().index(",")],self.Filter_Window,itemget,self.all_data)
-                    self.Filter_Window.show()                                                               
+                                                            
                 else:                
                     self.Filter_Window = QtWidgets.QMainWindow()
                     self.ui2 = Ui_Filter_Window()
@@ -2905,7 +2910,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 self.ui.setupUi(item3,self.Value)
                 self.Value.show()
             else :
-                if "Date" in item3.text():
+                if "," in  item3.text():
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text()[:item3.text().index(",")],self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()   
+
+                elif "Date" in item3.text():
                     if "Year" in item3.text() or "Month" in item3.text() or "Day" in item3.text():
                         self.Filter_Window = QtWidgets.QMainWindow()
                         self.ui2 = Ui_Filter_date_Window()
@@ -2916,11 +2927,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         self.ui2 = Ui_Filter_Date_Window()
                         self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
                         self.Filter_Window.show()
-                elif "," in  item3.text():
-                    self.Filter_Window = QtWidgets.QMainWindow()
-                    self.ui2 = Ui_Filter_Window()
-                    self.ui2.setupUi(item3.text()[:item3.text().index(",")],self.Filter_Window,itemget,self.all_data)
-                    self.Filter_Window.show()                      
+                   
                 else:                                    
                     self.Filter_Window = QtWidgets.QMainWindow()
                     self.ui2 = Ui_Filter_Window()
