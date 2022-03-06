@@ -1192,10 +1192,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             elif item4 == head_columns[-1]:
                 pass            
             else:
-                if "Day" in head_columns[head_columns.index(item4)+1]:
-                    pass
-                elif "," in y:
+                if "," in y:
                     self.listWidget_2.addItem(y[y.index(",")+1:]) 
+                elif "Day" in head_columns[head_columns.index(item4)+1]:
+                    pass
                 else:
                     if head_columns[head_columns.index(item4)+1] not in list_widget: 
                         self.listWidget_2.addItem(head_columns[head_columns.index(item4)+1]) 
@@ -1239,15 +1239,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             elif item4 == head_columns[-1]:
                 pass            
             else:
-                if "Day" in head_columns[head_columns.index(item4)+1]:
-                    pass
-                elif "," in y:
+                if "," in y:
                     self.listWidget_3.addItem(y[y.index(",")+1:]) 
+                elif "Day" in head_columns[head_columns.index(item4)+1]:
+                    pass 
                 else:
                     print("sad")
                     if head_columns[head_columns.index(item4)+1] not in list_widget:
                         self.listWidget_3.addItem(head_columns[head_columns.index(item4)+1]) 
-
+                        
     def update_head(self):
         if len(self.listWidget) == 0 and len(self.listWidget_4) == 0:
             return print("ERROR")   
