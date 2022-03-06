@@ -893,6 +893,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.listWidget.setDragEnabled(True) #DRAG AND DROP
         self.listWidget.setDefaultDropAction(QtCore.Qt.MoveAction)  
         self.listWidget.setSelectionMode(2) # add multiple
+        self.listWidget.installEventFilter(self)
 
         self.listWidget_2.setAcceptDrops(True)
         self.listWidget_2.setDragEnabled(True) #DRAG AND DROP
@@ -1131,7 +1132,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 item = source.itemAt(event.pos())
                 # print(item.text())
             return True
-        
+
+        if (event.type() == QtCore.QEvent.ContextMenu and
+            source is self.listWidget):
+            self.index = source.currentIndex().row()
+            self.menu = QtWidgets.QMenu()
+            
+            self.action = QtWidgets.QAction("Mix")
+
+
+            self.menu.addAction(self.action)
+
+
+            self.action.triggered.connect(self.mix_col)
+
+            if self.menu.exec_(event.globalPos()):
+                item = source.itemAt(event.pos())
+                # print(item.text())
+            return True
+
         return super().eventFilter(source, event)
 
 
