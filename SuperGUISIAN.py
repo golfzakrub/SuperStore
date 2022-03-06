@@ -1139,17 +1139,18 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         head_columns = []
         list_widget = []
         list_widget_not_select = []
+        y = self.listWidget_2.currentItem().text()
         for i in self.all_data.columns:
             head_columns.append(i)   
         
         if  "(" in self.listWidget_2.currentItem().text():
-            item4 = self.listWidget_2.currentItem().text()[self.listWidget_2.currentItem().text().index("(")+1:self.listWidget_2.currentItem().text().index(")")]
+            item4 = self.listWidget_2.currentItem().text()[self.listWidget_2.currentItem().text().index("(")+1:self.listWidget_2.currentItem().text().index(")")]    
         else:
             item4 = self.listWidget_2.currentItem().text()
             
         for x in  range(len(self.listWidget_2)):
             if "(" in self.listWidget_2.item(x).text():
-                if self.listWidget_2.item(x).text() != item4:
+                if self.listWidget_2.item(x).text()[self.listWidget_2.currentItem().text().index("(")+1:self.listWidget_2.currentItem().text().index(")")] != item4:
                     list_widget.append(self.listWidget_2.item(x).text()[self.listWidget_2.item(x).text().index("(")+1:self.listWidget_2.item(x).text().index(")")])
                 list_widget_not_select.append(self.listWidget_2.item(x).text()[self.listWidget_2.item(x).text().index("(")+1:self.listWidget_2.item(x).text().index(")")])            
             else:
@@ -1174,6 +1175,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             else:
                 if "Day" in head_columns[head_columns.index(item4)+1]:
                     pass
+                elif "," in y:
+                    self.listWidget_2.addItem(y[y.index(",")+1:]) 
                 else:
                     if head_columns[head_columns.index(item4)+1] not in list_widget: 
                         self.listWidget_2.addItem(head_columns[head_columns.index(item4)+1]) 
@@ -1182,6 +1185,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         head_columns = []
         list_widget = []
         list_widget_not_select = []
+        y = self.listWidget_3.currentItem().text()
         for i in self.all_data.columns:
             head_columns.append(i)
         
@@ -1192,7 +1196,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             
         for x in  range(len(self.listWidget_3)):
             if "(" in self.listWidget_3.item(x).text():
-                if self.listWidget_3.item(x).text() != item4:
+                if self.listWidget_3.item(x).text()[self.listWidget_3.currentItem().text().index("(")+1:self.listWidget_3.currentItem().text().index(")")] != item4:
                     list_widget.append(self.listWidget_3.item(x).text()[self.listWidget_3.item(x).text().index("(")+1:self.listWidget_3.item(x).text().index(")")])
                 list_widget_not_select.append(self.listWidget_3.item(x).text()[self.listWidget_3.item(x).text().index("(")+1:self.listWidget_3.item(x).text().index(")")])            
             else:
@@ -1218,6 +1222,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             else:
                 if "Day" in head_columns[head_columns.index(item4)+1]:
                     pass
+                elif "," in y:
+                    self.listWidget_3.addItem(y[y.index(",")+1:]) 
                 else:
                     print("sad")
                     if head_columns[head_columns.index(item4)+1] not in list_widget:
@@ -1390,11 +1396,15 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         for r in range(len(self.listWidget_3)):            
             if "(" in self.listWidget_3.item(r).text() :
                 row_index.append(self.listWidget_3.item(r).text()[self.listWidget_3.item(r).text().index("(")+1:self.listWidget_3.item(r).text().index(")")])
+            elif "," in self.listWidget_3.item(r).text() :
+                row_index.append(self.listWidget_3.item(r).text()[:self.listWidget_3.item(r).text().index(",")])
             else:
                 row_index.append(self.listWidget_3.item(r).text())
         for c in range(len(self.listWidget_2)):
             if "(" in self.listWidget_2.item(c).text() :
                 col_index.append(self.listWidget_2.item(c).text()[self.listWidget_2.item(c).text().index("(")+1:self.listWidget_2.item(c).text().index(")")])
+            elif "," in self.listWidget_2.item(r).text() :
+                col_index.append(self.listWidget_2.item(r).text()[:self.listWidget_2.item(r).text().index(",")])                
             else:    
                 col_index.append(self.listWidget_2.item(c).text())
         for data_row in range(len(row_index)):
@@ -2738,13 +2748,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         for col in range(len(self.listWidget_2)):
             col_text = self.listWidget_2.item(col).text()
             if "(" in col_text :
-                col_index.append(col_text[col_text.index("(")+1:col_text.index(")")]) 
+                col_index.append(col_text[col_text.index("(")+1:col_text.index(")")])
+            elif "," in col_text:
+                col_index.append(col_text[:col_text.index(",")]) 
             else:
                 col_index.append(col_text)
         for row in range(len(self.listWidget_3)):
             row_text = self.listWidget_3.item(row).text()
             if "(" in row_text :
-                col_index.append(row_text[row_text.index("(")+1:row_text.index(")")]) 
+                col_index.append(row_text[row_text.index("(")+1:row_text.index(")")])
+            elif "," in row_text:
+                col_index.append(row_text[:row_text.index(",")]) 
             else:           
                 col_index.append(row_text)
 
@@ -2826,7 +2840,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         self.Filter_Window = QtWidgets.QMainWindow()
                         self.ui2 = Ui_Filter_Date_Window()
                         self.ui2.setupUi(item2.text(),self.Filter_Window,itemget,self.all_data)
-                        self.Filter_Window.show()                                                              
+                        self.Filter_Window.show()
+                elif "," in  item2.text():
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item2.text()[:item2.text().index(",")],self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()                                                               
                 else:                
                     self.Filter_Window = QtWidgets.QMainWindow()
                     self.ui2 = Ui_Filter_Window()
@@ -2877,7 +2896,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         self.Filter_Window = QtWidgets.QMainWindow()
                         self.ui2 = Ui_Filter_Date_Window()
                         self.ui2.setupUi(item3.text(),self.Filter_Window,itemget,self.all_data)
-                        self.Filter_Window.show()  
+                        self.Filter_Window.show()
+                elif "," in  item3.text():
+                    self.Filter_Window = QtWidgets.QMainWindow()
+                    self.ui2 = Ui_Filter_Window()
+                    self.ui2.setupUi(item3.text()[:item3.text().index(",")],self.Filter_Window,itemget,self.all_data)
+                    self.Filter_Window.show()                      
                 else:                                    
                     self.Filter_Window = QtWidgets.QMainWindow()
                     self.ui2 = Ui_Filter_Window()
@@ -2942,6 +2966,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             self.listWidget_4.addItem(i)
    
         self.listWidget_3.clear()    
+        
+    
+    def mix_col(self):
+        items = self.listWidget.selectedItems()
+        x = []
+        y = ""
+        for i in range(len(items)):
+            x.append(str(self.listWidget.selectedItems()[i].text()))
+            y += str(self.listWidget.selectedItems()[i].text()) + ","
+        self.listWidget.addItem(y[:-1])
+        Dimension.append(y[:-1])
 
 
 if __name__ == "__main__":
