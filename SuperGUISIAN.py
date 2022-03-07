@@ -1341,8 +1341,11 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     
     def readData(self):
         self.all_data = pd.read_csv(self.filename,encoding = 'windows-1252').dropna()
+
         global namefile
-        namefile = self.filename[self.filename.index("/",-15,-1)+1:self.filename.index(".")]
+        split = self.filename.split("/")
+        namefile = split[-1][:-4]
+
         print(namefile)
         self.showdata_head()
         self.showdata_table()
@@ -1436,7 +1439,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                               
         if len(col_index) >= 1 :
             if col_index[0] in Dimension:
-                encode_list.append(alt.X(col_index[0]))
+                encode_list.append(alt.X(col_index[0]+":O"))
                 tooltip_list.append(col_index[0])
                 encode_PieList.append(alt.Theta(col_index[0]))
                 encode_ColorList.append(alt.Color(col_index[0]))
@@ -1450,7 +1453,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 encode_ColorList.append(alt.Color(f"{op[col_index[0]]}({col_index[0]})"))
             else:     
                 if "Year" in col_index[0] or "Month" in col_index[0] or "Day" in col_index[0]:
-                    encode_list.append(alt.X(col_index[0]))
+                    encode_list.append(alt.X(col_index[0]+":O"))
                     tooltip_list.append(col_index[0])
                     
         if len(col_index) >= 2 :
@@ -1466,13 +1469,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 tooltip_list.append(f"{op[col_index[1]]}({col_index[1]})")    
             else:     
                 if "Year" in col_index[1] or "Month" in col_index[1] or "Day" in col_index[1]:
-                    encode_list.append(alt.Column(col_index[1]))
+                    encode_list.append(alt.Column(col_index[1]+":O"))
                     tooltip_list.append(col_index[1])
 
                     
         if len(row_index) >= 1 :
             if row_index[0] in Dimension:
-                encode_list.append(alt.Y(row_index[0]))
+                encode_list.append(alt.Y(row_index[0]+":O"))
                 tooltip_list.append(row_index[0])
 
             elif row_index[0] in Measurement:
@@ -1482,12 +1485,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 tooltip_list.append(f"{op[row_index[0]]}({row_index[0]})")
             else:     
                 if "Year" in row_index[0] or "Month" in row_index[0] or "Day" in row_index[0]:
-                    encode_list.append(alt.Y(row_index[0]))
+                    encode_list.append(alt.Y(row_index[0]+":O"))
                     tooltip_list.append(row_index[0])
                     
         if len(row_index) >= 2 :
             if row_index[1] in Dimension:
-                encode_list.append(alt.Row(row_index[1]))
+                encode_list.append(alt.Row(row_index[1]+":O"))
                 tooltip_list.append(row_index[1])
 
             elif row_index[1] in Measurement:
@@ -1498,13 +1501,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 
             else:     
                 if "Year" in row_index[1] or "Month" in row_index[1] or "Day" in row_index[1]:
-                    encode_list.append(alt.Row(row_index[1]))
+                    encode_list.append(alt.Row(row_index[1]+":O"))
                     tooltip_list.append(row_index[1])
         
         if len(col_index) >= 3 or len(row_index) >= 3:
             if len(col_index) >= 3:
                 if col_index[2] in Dimension:
-                    encode_list.append(alt.Color(col_index[2]))
+                    encode_list.append(alt.Color(col_index[2]+":O"))
                     tooltip_list.append(col_index[2])
 
                 elif col_index[2] in Measurement:
@@ -1518,12 +1521,12 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         tooltip_list.append(f"{op[col_index[2]]}({col_index[2]})")     
                 else:     
                     if "Year" in col_index[2] or "Month" in col_index[2] or "Day" in col_index[2]:
-                        encode_list.append(alt.Color(col_index[2]))
+                        encode_list.append(alt.Color(col_index[2]+":O"))
                         tooltip_list.append(col_index[2])
                         
             elif len(row_index) >= 3 :      
                 if row_index[2] in Dimension:
-                    encode_list.append(alt.Color(row_index[2]))
+                    encode_list.append(alt.Color(row_index[2]+":O"))
                     tooltip_list.append(row_index[2])
 
                 elif row_index[2] in Measurement:
@@ -1534,7 +1537,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 
                 else:     
                     if "Year" in row_index[2] or "Month" in row_index[2] or "Day" in row_index[2]:
-                        encode_list.append(alt.Color(row_index[2]))
+                        encode_list.append(alt.Color(row_index[2]+":O"))
                         tooltip_list.append(row_index[2])  
 
         
