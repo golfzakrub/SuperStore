@@ -1090,9 +1090,10 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             self.all_data[str(Date_list[x])+" Month"] = split_list[x][1]
             self.all_data[str(Date_list[x])+" Year"] = split_list[x][2]
             #### str to int
-            self.all_data[str(Date_list[x])+" Day"].astype(int)
-            self.all_data[str(Date_list[x])+" Month"].astype(int)
-            self.all_data[str(Date_list[x])+" Year"].astype(int)
+            
+            self.all_data[str(Date_list[x])+" Day"]= self.all_data[str(Date_list[x])+" Day"].astype(str).str.zfill(2)
+            self.all_data[str(Date_list[x])+" Month"]= self.all_data[str(Date_list[x])+" Month"].astype(str).str.zfill(2)
+            self.all_data[str(Date_list[x])+" Year"]= self.all_data[str(Date_list[x])+" Year"].astype(str)
         
         if len(Date_list) > 0:            
             return True           
@@ -1458,7 +1459,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     
         if len(col_index) >= 2 :
             if col_index[1] in Dimension:
-                encode_list.append(alt.Column(col_index[1]))
+                encode_list.append(alt.Column(col_index[1]+":0"))
                 tooltip_list.append(col_index[1])
                 
                                           
@@ -2321,7 +2322,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), 
                         tooltip =[col_index[0],col_index[1],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="bar chart")
+                        .properties(title="line chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -2332,7 +2333,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), 
                         tooltip =[col_index[0],col_index[1],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="bar chart")
+                        .properties(title="line chart")
                         # .configure_title(anchor="start")
                         )
                 #dimension 2 Row 1 Col  measurement
