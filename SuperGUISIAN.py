@@ -1662,7 +1662,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             tooltip = [Alt_Axis_list[i],row_index[0]])
                             
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
@@ -1675,7 +1675,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             tooltip = [Alt_Axis_list[i],row_index[0]])
                             
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
                     if count_Column == 1:
@@ -1697,7 +1697,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             .mark_bar()
                             .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =[col_index[0],Alt_Axis_list[i]])
                             .resolve_scale(x="independent",y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
@@ -1707,7 +1707,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             .mark_bar()
                             .encode(x= alt.X(col_index[0]),y= alt.Y(Alt_Axis_list[i]), tooltip =[col_index[0],Alt_Axis_list[i]])
                             .resolve_scale(x="independent",y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
                     if count_Row == 1:
@@ -1724,25 +1724,25 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_bar()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
                             tooltip =[row_index[0],row_index[1],Alt_Axis_list[i]])
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_bar()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
                             tooltip =[row_index[0],row_index[1],Alt_Axis_list[i]])
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
                     if count_Column == 1:
@@ -1758,23 +1758,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_bar()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), 
                             tooltip =[col_index[0],col_index[1],Alt_Axis_list[i]])
                             .resolve_scale(x="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_bar()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),
                             tooltip =[col_index[0],col_index[1],Alt_Axis_list[i]])
                             .resolve_scale(x="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
                     if count_Row == 1:
@@ -1790,23 +1790,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_bar()
                             .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), 
                             tooltip =[Alt_Axis_list[i],row_index[0],row_index[1],row_index[2]])
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_bar()
                             .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), 
                             tooltip =[Alt_Axis_list[i],row_index[0],row_index[1],row_index[2]])
                             .resolve_scale(y="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
                     if count_Column == 1:
@@ -1823,23 +1823,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_bar()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), 
                             tooltip =[Alt_Axis_list[i],col_index[0],col_index[1],col_index[2]])
                             .resolve_scale(x="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")  
                             )  
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).first().sum(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).first().sum(filter_str[:-4]))
                             .mark_bar()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), 
                             tooltip =[Alt_Axis_list[i],col_index[0],col_index[1],col_index[2]])
                             .resolve_scale(x="independent")
-                            .properties(title="line chart")
+                            .properties(title="Bar Chart")
                             # .configure_title(anchor="start")
                             )
 
@@ -1859,7 +1859,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     .mark_bar()
                     .encode(*encode_list, tooltip =tooltip_list)
                     .resolve_scale(x="independent",y="independent")
-                    .properties(title="line chart")
+                    .properties(title="Bar Chart")
                     .configure_title(anchor="start")
                     )    
                 else:       
@@ -1868,7 +1868,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     .mark_bar()
                     .encode(*encode_list, tooltip =tooltip_list)
                     .resolve_scale(x="independent",y="independent")
-                    .properties(title="line chart")
+                    .properties(title="Bar Chart")
                     .configure_title(anchor="start")
                     )
 
@@ -1885,7 +1885,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), 
                         tooltip =[col_index[0],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -1896,7 +1896,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), 
                         tooltip =[col_index[0],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         )
                 #dimension 1 Row 1 Col  measurement
@@ -1910,7 +1910,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),
                         tooltip =[row_index[0],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -1922,7 +1922,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),
                         tooltip =[row_index[0],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         )            
 
@@ -1936,7 +1936,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), 
                         tooltip =[col_index[0],col_index[1],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -1947,7 +1947,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), 
                         tooltip =[col_index[0],col_index[1],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         )
                 #dimension 2 Row 1 Col  measurement
@@ -1961,7 +1961,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
                         tooltip =[row_index[0],row_index[1],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -1973,7 +1973,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='descending')),row = alt.Row(row_index[1]),
                         tooltip =[row_index[0],row_index[1],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         )                
 
@@ -1987,7 +1987,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]),color=alt.Color(col_index[2]), 
                         tooltip =[col_index[0],col_index[1],col_index[2],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -1998,7 +1998,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]),color=alt.Color(col_index[2]), 
                         tooltip =[col_index[0],col_index[1],col_index[2],row_index[0]])
                         .resolve_scale(x="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         )
                 #dimension 3 Row 1 Col  measurement
@@ -2012,7 +2012,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),
                         tooltip =[row_index[0],row_index[1],row_index[2],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")  
                         )  
                         
@@ -2024,7 +2024,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color=alt.Color(row_index[2]),
                         tooltip =[row_index[0],row_index[1],row_index[2],col_index[0]])
                         .resolve_scale(y="independent")
-                        .properties(title="line chart")
+                        .properties(title="Bar Chart")
                         # .configure_title(anchor="start")
                         ) 
 
@@ -2159,7 +2159,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
@@ -2171,7 +2171,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),
                             y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),
@@ -2193,7 +2193,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]), 
                             tooltip =[col_index[0],col_index[1],Alt_Axis_list[i]])
@@ -2204,7 +2204,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),
                             tooltip =[col_index[0],col_index[1],Alt_Axis_list[i]])
@@ -2225,7 +2225,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), 
                             tooltip =[Alt_Axis_list[i],row_index[0],row_index[1],row_index[2]])
@@ -2236,7 +2236,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0]],as_index=False).sum().query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_line()
                             .encode(x = alt.X(Alt_Axis_list[i]),y= alt.Y(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),row = alt.Row(row_index[1]),color= alt.Color(row_index[2]), 
                             tooltip =[Alt_Axis_list[i],row_index[0],row_index[1],row_index[2]])
@@ -2258,7 +2258,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), 
                             tooltip =[Alt_Axis_list[i],col_index[0],col_index[1],col_index[2]])
@@ -2269,7 +2269,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).first().sum(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).first().sum(filter_str[:-4]))
                             .mark_line()
                             .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(Alt_Axis_list[i]),column = alt.Column(col_index[1]),color= alt.Color(col_index[2]), 
                             tooltip =[Alt_Axis_list[i],col_index[0],col_index[1],col_index[2]])
