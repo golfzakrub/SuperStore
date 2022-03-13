@@ -2317,7 +2317,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         
                     if filter_str == "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data].groupby(col_index[0],as_index=False).first()) #replace chart_list array(1035)
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1]],as_index=False).max()) #replace chart_list array(1035)
                         .mark_line()
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]),column = alt.Column(col_index[1]), 
                         tooltip =[col_index[0],col_index[1],row_index[0]])
