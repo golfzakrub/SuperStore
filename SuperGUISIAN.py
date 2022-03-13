@@ -8,11 +8,10 @@ from PyQt5.QtWidgets import  QApplication,QTableView,QMainWindow, QTableWidgetIt
 import  pandas as pd
 from io import StringIO
 import altair as alt
-from PyQt5.QtCore import QDataStream, Qt ,QEvent
+from PyQt5.QtCore import QDataStream, Qt ,QEvent,QAbstractTableModel,QSortFilterProxyModel
 import json
 import os.path
 import hashlib
-
 import sys
 
 class headTopic:  
@@ -770,7 +769,30 @@ class Ui_Value(object):
         Value.close()
     ###############################################################
 
+class pandasModel(QAbstractTableModel):
+    
+    def __init__(self, data):
+        QAbstractTableModel.__init__(self)
+        self._data = data
 
+    def rowCount(self, parent=None):
+        return self._data.shape[0]
+
+    def columnCount(self, parnet=None):
+        return self._data.shape[1]
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid():
+            if role == Qt.DisplayRole:
+                return str(self._data.iloc[index.row(), index.column()])
+        return None
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self._data.columns[col]
+        return None
+
+ 
 class Ui_MainWindow(QtWidgets.QMainWindow,object):
     
 
@@ -791,19 +813,27 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.tabWidget.setObjectName("tabWidget")
         self.DataFrame = QtWidgets.QWidget()
         self.DataFrame.setObjectName("DataFrame")
-        self.tableWidget = QtWidgets.QTableWidget(self.DataFrame)
-        self.tableWidget.setGeometry(QtCore.QRect(0, 0, 671, 601))
-        self.tableWidget.setObjectName("tableWidget")
-        self.tableWidget.setColumnCount(0)
-        self.tableWidget.setRowCount(0)
+        # self.tableWidget = QtWidgets.QTableWidget(self.DataFrame)
+        # self.tableWidget.setGeometry(QtCore.QRect(0, 0, 671, 601))
+        # self.tableWidget.setObjectName("tableWidget")
+        # self.tableWidget.setColumnCount(0)
+        # self.tableWidget.setRowCount(0)
         self.tabWidget.addTab(self.DataFrame, "")
+        self.tableView = QtWidgets.QTableView(self.DataFrame)
+        self.tableView.setGeometry(QtCore.QRect(0, 0, 671, 601))
+        self.tableView.setObjectName("tableView")
+        
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
-        self.tableWidget_2 = QtWidgets.QTableWidget(self.tab)
-        self.tableWidget_2.setGeometry(QtCore.QRect(0, 40, 671, 601))
-        self.tableWidget_2.setObjectName("tableWidget_2")
-        self.tableWidget_2.setColumnCount(0)
-        self.tableWidget_2.setRowCount(0)
+        # self.tableWidget_2 = QtWidgets.QTableWidget(self.tab)
+        # self.tableWidget_2.setGeometry(QtCore.QRect(0, 40, 671, 601))
+        # self.tableWidget_2.setObjectName("tableWidget_2")
+        # self.tableWidget_2.setColumnCount(0)
+        # self.tableWidget_2.setRowCount(0)
+        self.tableView_2 = QtWidgets.QTableView(self.tab)
+        self.tableView_2.setGeometry(QtCore.QRect(0, 40, 671, 601))
+        self.tableView_2.setObjectName("tableView_2")
+        
         self.Grid_table_button = QtWidgets.QPushButton(self.tab)
         self.Grid_table_button.setGeometry(QtCore.QRect(300, 10, 75, 23))
         self.Grid_table_button.setObjectName("Grid_table_button")   
@@ -931,8 +961,9 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        self.tableWidget_2.setSortingEnabled(True)        
-
+        
+        # self.tableWidget_2.setSortingEnabled(True)        
+        self.tableView_2.setSortingEnabled(True)
 
 
         self.view =WebEngineView()
@@ -941,7 +972,13 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.filter = Ui_Value()
         self.filterDimension = Ui_Filter_Window()
 
-        self.tableWidget.setSortingEnabled(True)    
+        # self.tableWidget.setSortingEnabled(True)
+            
+        self.tableView.setSortingEnabled(True)
+        
+        # vh = self.tableView.verticalHeader()    
+        # hh = self.tableView.horizontalHeader()
+        
 
         
     def retranslateUi(self, MainWindow):
@@ -1323,23 +1360,36 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
             self.listWidget_4.addItem(x)
             
     
-    def showdata_table(self):  
-        self.tableWidget.clear()
-        self.split_date()
-        numcolumn = len(self.all_data)
-        print(len(self.all_data))
+    # def showdata_table(self):  
+    #     self.tableWidget.clear()
+    #     self.split_date()
+    #     numcolumn = len(self.all_data)
+    #     print(len(self.all_data))
         
-        if numcolumn == 0:
-            numRows = len(self.all_data.index)
-        else:
-            numRows = numcolumn
-        self.tableWidget.setColumnCount(len(self.all_data.columns))
-        self.tableWidget.setRowCount(numRows)
-        self.tableWidget.setHorizontalHeaderLabels(self.all_data.columns)
-        for i in range(numRows):
-            for j in range(len(self.all_data.columns)):
-                self.tableWidget.setItem(i, j, QTableWidgetItem(str(self.all_data.iat[i,j])))   
-                    
+    #     if numcolumn == 0:
+    #         numRows = len(self.all_data.index)
+    #     else:
+    #         numRows = numcolumn
+    #     self.tableWidget.setColumnCount(len(self.all_data.columns))
+    #     self.tableWidget.setRowCount(numRows)
+    #     self.tableWidget.setHorizontalHeaderLabels(self.all_data.columns)
+    #     for i in range(numRows):
+    #         for j in range(len(self.all_data.columns)):
+    #             self.tableWidget.setItem(i, j, QTableWidgetItem(str(self.all_data.iat[i,j]))) 
+                
+    def showdata_table(self):
+        self.split_date()
+        model = pandasModel(self.all_data)
+        proxyModel = QSortFilterProxyModel()
+        proxyModel.setSourceModel(model)
+        self.tableView.setModel(proxyModel)
+        
+        # self.tableView.setModel(model)
+        
+   
+            
+
+          
     def readData(self):
         self.all_data = pd.read_csv(self.filename,encoding = 'windows-1252').dropna()
 
@@ -1828,8 +1878,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
                 #dimension 1 Col 1  Row measurement
                 if len(col_index) == 1 and row_index[0] in Measurement:
-                        
-                    if filter_str == "":
+                    print("S")
+                    if filter_str == "":           
                         alt.data_transformers.disable_max_rows()
                         chart = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
                         .mark_bar()
@@ -1842,7 +1892,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         
                     else:
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(col_index[0],as_index=False).first().query(filter_str[:-4]))
                         .mark_bar()
                         .encode(x= alt.X(col_index[0],sort=alt.SortField(field=col_index[0],order ='ascending')),y= alt.Y(row_index[0]), 
                         tooltip =[col_index[0],row_index[0]])
@@ -2263,7 +2313,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
 
                 #dimension 1 Col 1  Row measurement
                 if len(col_index) == 1 and row_index[0] in Measurement:
-                        
+                    print("SS")    
                     if filter_str == "":
                         alt.data_transformers.disable_max_rows()
                         chart = (alt.Chart(self.all_data[data].groupby(col_index[0],as_index=False).first())#replace chart_list array(1035)
@@ -2768,6 +2818,57 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
         self.verticalLayout.addWidget(self.view)
         print("Pie Plot success!!!")       
         
+    # def gridtable(self):
+    #     col_index = []
+    #     for col in range(len(self.listWidget_2)):
+    #         col_text = self.listWidget_2.item(col).text()
+    #         if "(" in col_text :
+    #             col_index.append(col_text[col_text.index("(")+1:col_text.index(")")])
+    #         elif "," in col_text:
+    #             col_index.append(col_text[:col_text.index(",")]) 
+    #         else:
+    #             col_index.append(col_text)
+    #     for row in range(len(self.listWidget_3)):
+    #         row_text = self.listWidget_3.item(row).text()
+    #         if "(" in row_text :
+    #             col_index.append(row_text[row_text.index("(")+1:row_text.index(")")])
+    #         elif "," in row_text:
+    #             col_index.append(row_text[:row_text.index(",")]) 
+    #         else:           
+    #             col_index.append(row_text)
+
+                
+    #     filter_str = ""
+    #     if  len(col_index) > 0:
+    #         s = col_index 
+    #         for x in range(len(s)):               
+    #             if s[x] not in filter_key:   
+    #                 pass
+    #             else:    
+    #                 filter_str += f"`{s[x]}` !=  {filter_key[s[x]]} and "
+    #         for z in range(len(s)):
+    #             if s[z] not in op_C:   
+    #                 pass
+    #             else:
+    #                 if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":    
+    #                     filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
+                                        
+    #     if filter_str != "":
+    #         print(filter_str)
+    #         self.tableWidget_2.setColumnCount(len(col_index))
+    #         self.tableWidget_2.setRowCount(len(self.all_data.query(filter_str[:-4])))
+    #         self.tableWidget_2.setHorizontalHeaderLabels(col_index)
+    #         for i in range(len(self.all_data.query(filter_str[:-4]))):
+    #             for j in range(len(col_index)):        
+    #                 self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].query(filter_str[:-4]).iat[i,j]))) 
+    #     else :
+    #         self.tableWidget_2.setColumnCount(len(col_index))
+    #         self.tableWidget_2.setRowCount(len(self.all_data))
+    #         self.tableWidget_2.setHorizontalHeaderLabels(col_index)
+    #         for i in range(len(self.all_data[col_index])):
+    #             for j in range(len(col_index)):        
+    #                 self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].iat[i,j]))) 
+                    
     def gridtable(self):
         col_index = []
         for col in range(len(self.listWidget_2)):
@@ -2801,24 +2902,20 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     pass
                 else:
                     if op_C[s[z]][0] != "" and op_C[s[z]][0] != "":    
-                        filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "      
-                                        
+                        filter_str += '`'+s[z]+'`' +' '+op_C[s[z]][0]+" "+op_C[s[z]][1]+" and "    
+        
         if filter_str != "":
-            print(filter_str)
-            self.tableWidget_2.setColumnCount(len(col_index))
-            self.tableWidget_2.setRowCount(len(self.all_data.query(filter_str[:-4])))
-            self.tableWidget_2.setHorizontalHeaderLabels(col_index)
-            for i in range(len(self.all_data.query(filter_str[:-4]))):
-                for j in range(len(col_index)):        
-                    self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].query(filter_str[:-4]).iat[i,j]))) 
-        else :
-            self.tableWidget_2.setColumnCount(len(col_index))
-            self.tableWidget_2.setRowCount(len(self.all_data))
-            self.tableWidget_2.setHorizontalHeaderLabels(col_index)
-            for i in range(len(self.all_data[col_index])):
-                for j in range(len(col_index)):        
-                    self.tableWidget_2.setItem(i, j, QTableWidgetItem(str(self.all_data[col_index].iat[i,j]))) 
-           
+            model = pandasModel(self.all_data[col_index].query(filter_str[:-4]))
+            proxyModel = QSortFilterProxyModel()
+            proxyModel.setSourceModel(model)
+            self.tableView_2.setModel(proxyModel)
+            # self.tableView_2.setModel(model)
+        else:
+            model = pandasModel(self.all_data[col_index])
+            proxyModel = QSortFilterProxyModel()
+            proxyModel.setSourceModel(model)
+            self.tableView_2.setModel(proxyModel)
+            # self.tableView_2.setModel(model)               
 
     def filterup(self):       
         item2 = self.listWidget_2.currentItem()    
@@ -3018,3 +3115,5 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
+
+
