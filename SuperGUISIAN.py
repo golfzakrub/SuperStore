@@ -1234,7 +1234,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 pass            
             else:
                 if "," in y:
-                    self.listWidget_2.addItem(y[y.index(",")+1:]) 
+                    if y[y.index(",")+1:] not in list_widget:
+                        self.listWidget_2.addItem(y[y.index(",")+1:]) 
                 elif "Day" in head_columns[head_columns.index(item4)+1]:
                     pass
                 else:
@@ -1281,7 +1282,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 pass            
             else:
                 if "," in y:
-                    self.listWidget_3.addItem(y[y.index(",")+1:]) 
+                    if y[y.index(",")+1:] not in list_widget:
+                        self.listWidget_3.addItem(y[y.index(",")+1:]) 
                 elif "Day" in head_columns[head_columns.index(item4)+1]:
                     pass 
                 else:
@@ -2434,6 +2436,28 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         tooltip =[col_index[0],col_index[1],col_index[2],row_index[0]])
                         )
 
+                #dimension 3 Row 1  Col measurement
+                if len(col_index) == 3 and row_index[0] in Measurement:
+                        
+                    if filter_str == "":
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).first()) #replace chart_list array(1035)
+                        .mark_line()
+                        .encode(x= alt.X(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),y= alt.Y(col_index[0]),column = alt.Column(row_index[1]),color=alt.Color(row_index[2]), 
+                        tooltip =[row_index[0],row_index[1],row_index[2],col_index[0]])
+                        .resolve_scale(x="independent")
+                        .properties(title="line chart")
+                        # .configure_title(anchor="start")  
+                        )  
+                        
+                    else:
+                        alt.data_transformers.disable_max_rows()
+                        chart = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).first().query(filter_str[:-4]))
+                        .mark_line()
+                        .encode(x= alt.X(row_index[0],sort=alt.SortField(field=row_index[0],order ='ascending')),y= alt.Y(col_index[0]),column = alt.Column(row_index[1]),color=alt.Color(row_index[2]), 
+                        tooltip =[row_index[0],row_index[1],row_index[2],col_index[0]])
+                        )
+
         elif  fig == "pie":     
             filter_str = ""
             if len(row_index) > 0 or len(col_index) > 0:
@@ -2492,7 +2516,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(row_index[0],as_index=False).first())
                             .mark_arc()
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =[Alt_Axis_list[i],row_index[0]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2502,7 +2526,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(row_index[0],as_index=False).first().query(filter_str[:-4]))
                             .mark_arc()
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =[Alt_Axis_list[i],row_index[0]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2521,7 +2545,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_arc()
                             # .encode(theta= alt.Theta(field=col_index[0],type='quantitative'),color= alt.Color(field =Alt_Axis_list[i],type='nominal'), tooltip =tooltip_list)
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =[Alt_Axis_list[i],col_index[0]])
@@ -2532,7 +2556,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_arc()
                              .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =[Alt_Axis_list[i],col_index[0]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2552,7 +2576,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_arc()
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =[Alt_Axis_list[i],row_index[0],row_index[1]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2562,7 +2586,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_arc()
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =[Alt_Axis_list[i],row_index[0],row_index[1]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2581,7 +2605,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                     for i in range(len(Alt_Axis_list)):
                         if filter_str == "":
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data[data]) #replace chart_list array(1035)
+                            chart_list[i] = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                             .mark_arc()
                             # .encode(theta= alt.Theta(field=col_index[0],type='quantitative'),color= alt.Color(field =Alt_Axis_list[i],type='nominal'), tooltip =tooltip_list)
                             .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column=alt.Column(col_index[1]), tooltip =[Alt_Axis_list[i],col_index[0],col_index[1]])
@@ -2592,7 +2616,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                             
                         else:
                             alt.data_transformers.disable_max_rows()
-                            chart_list[i] = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                            chart_list[i] = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1]],as_index=False).sum().query(filter_str[:-4]))
                             .mark_arc()
                              .encode(theta= alt.Theta(field =Alt_Axis_list[i],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column=alt.Column(col_index[1]), tooltip =[Alt_Axis_list[i],col_index[0],col_index[1]])
                             .resolve_scale(theta="independent",color="independent")
@@ -2631,7 +2655,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(row_index) == 1 and col_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[row_index[0]],as_index=False).sum().query(filter_str[:-4]))
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =[col_index[0],row_index[0]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2640,7 +2664,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[row_index[0]],as_index=False).sum())#replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'), tooltip =[col_index[0],row_index[0]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2651,7 +2675,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(col_index) == 1 and row_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[col_index[0]],as_index=False).sum().query(filter_str[:-4]))
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =[row_index[0],col_index[0]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2660,7 +2684,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[col_index[0]],as_index=False).sum()) #replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'), tooltip =[row_index[0],col_index[0]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2671,7 +2695,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(row_index) == 2 and col_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1]],as_index=False).first().query(filter_str[:-4]))
+
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =[row_index[0],col_index[0],row_index[1]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2680,7 +2705,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1]],as_index=False).sum()) #replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1]), tooltip =[row_index[0],col_index[0],row_index[1]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2691,7 +2716,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(col_index) == 2 and row_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1]],as_index=False).sum().query(filter_str[:-4]))
+
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =[row_index[0],col_index[0],col_index[1]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2700,7 +2726,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1]],as_index=False).first()) #replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1]), tooltip =[row_index[0],col_index[0],col_index[1]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2711,7 +2737,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(row_index) == 3 and col_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).first().query(filter_str[:-4]))
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =[row_index[0],col_index[0],row_index[1],row_index[2]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2720,7 +2746,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[row_index[0],row_index[1],row_index[2]],as_index=False).first()) #replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =col_index[0],type='quantitative'),color= alt.Color(field=row_index[0],type='nominal'),row = alt.Row(row_index[1] and row_index[2]), tooltip =[row_index[0],col_index[0],row_index[1],row_index[2]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2731,7 +2757,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                 if len(col_index) == 3 and row_index[0] in Measurement:
                     if filter_str != "":
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data.query(filter_str[:-4]))
+                        chart = (alt.Chart(self.all_data.groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).first().query(filter_str[:-4]))
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =[row_index[0],col_index[0],col_index[1],col_index[2]])
                         .resolve_scale(theta="independent",color="independent")
@@ -2740,7 +2766,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow,object):
                         )    
                     else:       
                         alt.data_transformers.disable_max_rows()
-                        chart = (alt.Chart(self.all_data[data])
+                        chart = (alt.Chart(self.all_data[data].groupby(by=[col_index[0],col_index[1],col_index[2]],as_index=False).first()) #replace chart_list array(1035)
                         .mark_arc()
                         .encode(theta= alt.Theta(field =row_index[0],type='quantitative'),color= alt.Color(field=col_index[0],type='nominal'),column = alt.Column(col_index[1] and col_index[2]), tooltip =[row_index[0],col_index[0],col_index[1],col_index[2]])
                         .resolve_scale(theta="independent",color="independent")
